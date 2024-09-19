@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "277307461591",
+    "project_id": "theoneandonly-45ab7",
+    "storage_bucket": "theoneandonly-45ab7.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:277307461591:android:02f6cc9c63f93608ae4592",
+        "android_client_info": {
+          "package_name": "com.theoneandonly"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDI-5omCwOWMr03kNyz-6LKodNBotakWBE"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
