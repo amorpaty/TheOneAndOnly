@@ -6,15 +6,14 @@
  */
 
 import React from 'react';
-import {
-  SafeAreaView,
-} from 'react-native';
+import { NavigationContainer } from '@react-navigation/native'
+import RootStack from './screens/RootStack';
 
 function App() {
-  return (
-    <SafeAreaView>
-      
-    </SafeAreaView>
+  return (     
+    <NavigationContainer>
+      <RootStack />
+    </NavigationContainer>
   );
 }
 
