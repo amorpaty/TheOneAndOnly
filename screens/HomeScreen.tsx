@@ -1,16 +1,9 @@
-<<<<<<< HEAD
 import React, { useEffect, useState } from "react";
 import { View } from "react-native";
 import MapView, { PROVIDER_GOOGLE } from "react-native-maps";
 import Geolocation from '@react-native-community/geolocation';
 import FloatingLocationButton from "../components/FloatingLocationButton";
 import FloatCafeListButton from "../components/FloatingCafeListButton";
-
-=======
-import React from "react";
-import { View } from "react-native";
-import MapView, { PROVIDER_GOOGLE } from "react-native-maps";
->>>>>>> parent of d5bbf8a (Home 화면 메뉴, 위치 버튼 생성)
 
 /**
  * 24.09.24 최초생성
@@ -19,7 +12,6 @@ import MapView, { PROVIDER_GOOGLE } from "react-native-maps";
  * @returns 
  */
 
-<<<<<<< HEAD
 const defaultPosition = {
     latitude: 37.541,
     longitude: 126.986,
@@ -27,8 +19,6 @@ const defaultPosition = {
     longitudeDelta: 3,
 }
 
-=======
->>>>>>> parent of d5bbf8a (Home 화면 메뉴, 위치 버튼 생성)
 function HomeScreen() {
     //지도 현재 위치 조회 컴포넌트 구현
     const [location, setLocation] = useState(defaultPosition);
@@ -53,7 +43,6 @@ function HomeScreen() {
     return (
         <View style={{ flex: 1 }}>
             <MapView    
-<<<<<<< HEAD
                 style={{ flex: 1 }}
                 provider={PROVIDER_GOOGLE}
                 initialRegion={defaultPosition}
@@ -68,17 +57,6 @@ function HomeScreen() {
             />
             <FloatCafeListButton />
             <FloatingLocationButton handleOnPress={handleOnPress}/>
-=======
-            style={{ flex: 1 }}
-            provider={PROVIDER_GOOGLE}
-            initialRegion={{
-                latitude: 37.78825,
-                longitude: -122.4324,
-                latitudeDelta: 0.0922,
-                longitudeDelta: 0.0421,
-            }}
-            />
->>>>>>> parent of d5bbf8a (Home 화면 메뉴, 위치 버튼 생성)
         </View>
     )
     
