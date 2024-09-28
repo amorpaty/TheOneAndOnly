@@ -54,7 +54,7 @@ function HomeScreen() {
                     longitudeDelta: 0.02,
                 }}                  
                 showsUserLocation={true}
-                showsMyLocationButton={true}
+                showsMyLocationButton={false}
             />
             <FloatCafeListButton />
             <FloatingLocationButton handleOnPress={handleOnPress}/>
