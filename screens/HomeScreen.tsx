@@ -4,6 +4,7 @@ import MapView, { PROVIDER_GOOGLE } from "react-native-maps";
 import Geolocation from '@react-native-community/geolocation';
 import FloatingLocationButton from "../components/FloatingLocationButton";
 import FloatCafeListButton from "../components/FloatingCafeListButton";
+import KeywordSearchBar from "../components/KeywordSearchBar";
 
 /**
  * 24.09.24 최초생성
@@ -22,6 +23,11 @@ const defaultPosition = {
 function HomeScreen() {
     //지도 현재 위치 조회 컴포넌트 구현
     const [location, setLocation] = useState(defaultPosition);
+
+    //로딩되면 바로 현재 위치 조회
+    useEffect(() => {
+        getLocation();
+    }, []);
 
     //위치 버튼 클릭 시 해당 컴포넌트 실행
     function handleOnPress(){ 
@@ -45,7 +51,6 @@ function HomeScreen() {
             <MapView    
                 style={{ flex: 1 }}
                 provider={PROVIDER_GOOGLE}
-                initialRegion={defaultPosition}
                 region={{
                     latitude : location.latitude,
                     longitude : location.longitude,
@@ -55,6 +60,7 @@ function HomeScreen() {
                 showsUserLocation={true}
                 showsMyLocationButton={false}
             />
+            <KeywordSearchBar />
             <FloatCafeListButton />
             <FloatingLocationButton handleOnPress={handleOnPress}/>
         </View>

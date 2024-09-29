@@ -8,10 +8,10 @@ function FloatingLocationButton({handleOnPress}){
             <Pressable style = {({pressed})=> [
                 styles.button,
                 Platform.OS === 'ios' && {
-                    opacity : pressed ? 0.6 : 1,
+                    opacity : pressed ? 0.1 : 0.2,
                 }
             ]}
-            android_ripple={{color :  'white'}}
+            android_ripple={{color :  '#57382D'}}
             onPress={handleOnPress}>
             <Icon name="location-searching" size={24} style={styles.icon} />
             </Pressable>
@@ -29,8 +29,8 @@ const styles = StyleSheet.create({
         borderRadius : 10,
         //ios 전용 그림자 설정
         shadowColor : 'black',
-        shadowOffset :{width : 0, height:4},
-        shadowOpacity : 0.3,
+        shadowOffset :{width : 1, height:4},
+        shadowOpacity : 3,
         shadowRadius : 4,
         //안드로이드 전용 그림자 설정 
         elevation : 5,
@@ -42,12 +42,12 @@ const styles = StyleSheet.create({
         width : 48,
         height : 48,
         borderRadius : 10,
-        backgroundColor : '#57382D',
+        backgroundColor : 'white',
         justifyContent : 'center',
         alignItems : 'center',
     },
     icon : {
-        color : 'white'
+        color : 'black'
     }
 });
 
