@@ -5,6 +5,7 @@ import Geolocation from '@react-native-community/geolocation';
 import FloatingLocationButton from "../components/FloatingLocationButton";
 import FloatCafeListButton from "../components/FloatingCafeListButton";
 import KeywordSearchBar from "../components/KeywordSearchBar";
+import { getKeywords } from "../lib/keywords";
 
 /**
  * 24.09.24 최초생성
@@ -15,17 +16,29 @@ import KeywordSearchBar from "../components/KeywordSearchBar";
 
 const defaultPosition = {
     latitude: 37.541,
-    longitude: 126.986,
-    latitudeDelta: 3,
-    longitudeDelta: 3,
+    longitude: 126.986
+    //latitudeDelta: 3,
+    //longitudeDelta: 3,
 }
 
 function HomeScreen() {
     //지도 현재 위치 조회 컴포넌트 구현
     const [location, setLocation] = useState(defaultPosition);
+    const [keywords, setKeywords] = useState([]);
+        
+    //키워드 목록 가져오기
+    async function fetchKeywords() {
+        try {
+            const fetchedKeywords = await getKeywords();  // 비동기 데이터 조회
+            setKeywords(Object(fetchedKeywords)); // 상태에 데이터 저장
+        } catch (error) {
+            console.error("Failed to fetch keywords:", error); // 오류 처리
+        }
+    }
 
     //로딩되면 바로 현재 위치 조회
     useEffect(() => {
+        fetchKeywords();
         getLocation();
     }, []);
 
@@ -60,7 +73,7 @@ function HomeScreen() {
                 showsUserLocation={true}
                 showsMyLocationButton={false}
             />
-            <KeywordSearchBar />
+            <KeywordSearchBar keywords={keywords}/>
             <FloatCafeListButton />
             <FloatingLocationButton handleOnPress={handleOnPress}/>
         </View>
