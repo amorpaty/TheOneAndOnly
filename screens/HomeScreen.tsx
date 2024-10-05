@@ -2,12 +2,12 @@ import React, { useEffect, useRef, useState } from "react";
 import { Button, View } from "react-native";
 import MapView, { PROVIDER_GOOGLE } from "react-native-maps";
 import Geolocation from '@react-native-community/geolocation';
-import FloatingLocationButton from "../components/FloatingLocationButton";
-import FloatCafeListButton from "../components/FloatingCafeListButton";
-import KeywordSearchBar from "../components/KeywordSearchBar";
+import FloatingLocationButton from "../components/home/FloatingLocationButton";
+import FloatCafeListButton from "../components/home/FloatingCafeListButton";
+import KeywordSearchBar from "../components/home/KeywordSearchBar";
 import { getKeywords } from "../lib/keywords";
 import SlidingUpPanel from 'rn-sliding-up-panel';
-import CafeMenuSlidingUpPanel from "../components/CafeMenuSlidingUpPanel";
+import CafeMenuSlidingUpPanel from "../components/home/CafeMenuSlidingUpPanel";
 
 /**
  * 24.09.24 최초생성
