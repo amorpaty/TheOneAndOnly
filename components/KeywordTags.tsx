@@ -2,6 +2,12 @@ import React from 'react';
 import { View, Text, StyleSheet } from 'react-native';
 import { Button } from 'react-native-paper';
 
+/**
+ * 24.09.30
+ * 키워드 Tag Button List 
+ * @param param
+ * @returns 
+ */
 function KeywordTags({keywords, handleKeywordPress}) {
   return (
     <View style={styles.container}>

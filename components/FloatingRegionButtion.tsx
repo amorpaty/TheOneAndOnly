@@ -1,6 +1,7 @@
 import React from "react";
 import { Platform, Pressable, StyleSheet, Text, View } from "react-native";
 
+// 지역설정 버튼
 function FloatingRegionButtion(){
     return (
         <View style={styles.wrapper}>

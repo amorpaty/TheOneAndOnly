@@ -42,7 +42,6 @@ const styles = StyleSheet.create({
         top: 20,
         left: 15,
         right: 15,
-        zIndex: 1,
         flexDirection: 'row',
         backgroundColor: 'white',
         padding: 2,
