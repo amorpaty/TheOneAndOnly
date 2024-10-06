@@ -2,6 +2,11 @@ import React from "react";
 import { Platform, Pressable, StyleSheet, View } from "react-native";
 import Icon from 'react-native-vector-icons/MaterialIcons';
 
+/**
+ * 현재 위치 이동 버튼
+ * @param param 
+ * @returns 
+ */
 function FloatingLocationButton({handleOnPress}){
     return (
         <View style={styles.wrapper}>

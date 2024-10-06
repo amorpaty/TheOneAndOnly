@@ -47,7 +47,7 @@ function MyScreen() {
 
 const styles = StyleSheet.create ({
     card: {
-        backgroundColor: '#D2691E',
+        backgroundColor: '#57382D',
         padding: 20,
         borderRadius: 10,
         margin: 20,
@@ -78,7 +78,7 @@ const styles = StyleSheet.create ({
     },
     tagText: {
         fontSize: 14,
-        color: '#D2691E',
+        color: '#57382D',
     },
     menu: {
         marginHorizontal: 20,
