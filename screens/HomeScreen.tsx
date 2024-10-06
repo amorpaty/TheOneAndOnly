@@ -1,5 +1,5 @@
 import React, { useEffect, useRef, useState } from "react";
-import { Button, View } from "react-native";
+import { View } from "react-native";
 import MapView, { PROVIDER_GOOGLE } from "react-native-maps";
 import Geolocation from '@react-native-community/geolocation';
 import FloatingLocationButton from "../components/home/FloatingLocationButton";

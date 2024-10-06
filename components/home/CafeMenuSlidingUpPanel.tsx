@@ -1,5 +1,5 @@
 import React from "react";
-import { Button, Image, ScrollView, StyleSheet, View } from "react-native";
+import { Image, ScrollView, StyleSheet, View } from "react-native";
 import { Text } from "react-native-paper";
 import SlidingUpPanel from "rn-sliding-up-panel";
 
