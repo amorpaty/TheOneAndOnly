@@ -38,7 +38,7 @@ function HomeScreen() {
 
     //로딩되면 키워드 목록과 현재 위치 조회
     useEffect(() => {
-        //fetchKeywords();
+        fetchKeywords();
         getLocation();
     }, []);
 

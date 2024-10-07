@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import { Image, Platform, StyleSheet, TextInput, View } from "react-native";
 import searchImage from '../../assets/src/image/search.png';
 import FloatingRegionButtion from "./FloatingRegionButtion";

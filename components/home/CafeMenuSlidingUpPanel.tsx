@@ -63,9 +63,7 @@ const cafes = [
  */
 function CafeMenuSlidingUpPanel({panelRef}){
     return (
-        <SlidingUpPanel containerStyle={{flex: 1, alignSelf: undefined}}
-            ref={c => panelRef.current = c}
-        >
+        <SlidingUpPanel containerStyle={{flex: 1, maxHeight : '100%', alignSelf: undefined}} ref={c => panelRef.current = c}>
             <View style={styles.slidingUpPanel}>
                 <ScrollView>
                     <>
