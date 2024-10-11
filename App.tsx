@@ -16,24 +16,21 @@ function App() {
 
   //로그인 인증 분기처리
   useEffect(() => {
-
     //로그인 여부 인증(check)
     async function checkStorage(){
       const token = await AsyncStorage.getItem('key');
 
       if(token){
         setIsLogin(true);
-      }else{
-        AsyncStorage.setItem('isLogin', JSON.stringify(false))
       }
     }
-
+    
     checkStorage();
   }, []);
 
   return (     
     <NavigationContainer>
-      <RootStack isLogin={isLogin} />
+      <RootStack isLogin={isLogin}/>
     </NavigationContainer>
   );
 }

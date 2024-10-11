@@ -1,5 +1,5 @@
 import React from "react";
-import { View, Alert, Image, StyleSheet, Text, TouchableOpacity } from "react-native";
+import { View, Image, StyleSheet, Text, TouchableOpacity } from "react-native";
 import {login } from "@react-native-seoul/kakao-login";
 import logo from "../assets/src/image/logo.png";
 import kakaoLoginButtonImg from "../assets/src/image/kakaoLoginButton.png";
@@ -16,15 +16,15 @@ function SignInScreen({navigation}){
     //카카오 로그인
     async function signInWithKakao(){
         try {
-            const token = await login().catch((error) => console.log(error));
+            const token = await login().catch((error) => console.log("SignIn error", error));
 
             if(!!!token){
                 return
             }
 
-            AsyncStorage.setItem('key', JSON.stringify(token))
-            AsyncStorage.setItem('isLogin', JSON.stringify(true))
-
+            AsyncStorage.setItem('key', JSON.stringify(token));
+            AsyncStorage.setItem('howLogin', "kakao");
+            
             navigation.navigate('MainTab');
 
           } catch (err) {

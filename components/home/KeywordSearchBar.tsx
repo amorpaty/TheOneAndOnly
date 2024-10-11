@@ -9,14 +9,7 @@ import KeywordTags from "./KeywordTags";
  * 24.09.29
  * 키워드 검색바 생성
  */
-function KeywordSearchBar({keywords}){
-  
-    const [selectedTag, setSelectedTag] = useState(null);
-
-    //키워드 선택 시 
-    function handleKeywordPress(keyword : string){
-       setSelectedTag(keyword);
-    };
+function KeywordSearchBar({keywords, handleKeywordPress}){
 
     return (
         <>

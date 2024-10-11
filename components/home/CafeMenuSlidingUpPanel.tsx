@@ -9,49 +9,49 @@ const cafes = [
       time: '10:00 ~ 22:00',
       status: '영업 중',
       tags: '#원두 로스팅 #에스프레소 바 #핸드드립 #노키즈존',
-      images: ['image1.png', 'image2.png', 'image3.png']
+      images: []
     },
     {
         name: '카페 반하다',
         time: '10:00 ~ 22:00',
         status: '영업 중',
         tags: '#원두 로스팅 #에스프레소 바 #핸드드립 #노키즈존',
-        images: ['image1.png', 'image2.png', 'image3.png']
+        images: []
       },
       {
         name: '카페 반하다',
         time: '10:00 ~ 22:00',
         status: '영업 중',
         tags: '#원두 로스팅 #에스프레소 바 #핸드드립 #노키즈존',
-        images: ['image1.png', 'image2.png', 'image3.png']
+        images: []
       },
       {
         name: '카페 반하다',
         time: '10:00 ~ 22:00',
         status: '영업 중',
         tags: '#원두 로스팅 #에스프레소 바 #핸드드립 #노키즈존',
-        images: ['image1.png', 'image2.png', 'image3.png']
+        images: []
       },
       {
         name: '카페 반하다',
         time: '10:00 ~ 22:00',
         status: '영업 중',
         tags: '#원두 로스팅 #에스프레소 바 #핸드드립 #노키즈존',
-        images: ['image1.png', 'image2.png', 'image3.png']
+        images: []
       },
       {
         name: '카페 반하다',
         time: '10:00 ~ 22:00',
         status: '영업 중',
         tags: '#원두 로스팅 #에스프레소 바 #핸드드립 #노키즈존',
-        images: ['image1.png', 'image2.png', 'image3.png']
+        images: []
       },
       {
         name: '카페 반하다',
         time: '10:00 ~ 22:00',
         status: '영업 중',
         tags: '#원두 로스팅 #에스프레소 바 #핸드드립 #노키즈존',
-        images: ['image1.png', 'image2.png', 'image3.png']
+        images: []
       },
   ];
 

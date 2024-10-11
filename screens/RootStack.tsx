@@ -1,13 +1,14 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import MainTab from "./MainTab";
 import SignInScreen from "./SignInScreen";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
 const Stack = createNativeStackNavigator();
 
 function RootStack({isLogin}) {
     return (
-        <Stack.Navigator initialRouteName={isLogin ? 'MainTab' : 'SignInScreen'}>
+        <Stack.Navigator initialRouteName={isLogin === true? 'MainTab' : 'SignInScreen'} >
             <Stack.Screen
                 name="SignInScreen"
                 component={SignInScreen}

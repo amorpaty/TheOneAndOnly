@@ -13,7 +13,7 @@ function FloatingCafeListButton({panelRef}){
                 }
             ]}
             android_ripple={{color :  '#57382D'}}
-            onPress={() => {panelRef.current?.show(250);}}
+            onPress={() => {panelRef.current?.show(10000);}}
             >
             <Icon name="menu" size={24} style={styles.icon} />
             </Pressable>
