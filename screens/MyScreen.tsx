@@ -10,18 +10,6 @@ import { logout } from "@react-native-seoul/kakao-login";
  */
 function MyScreen({navigation}) {
 
-    // 로그인 경로에 따른 분기 처리
-    async function setLogout(){
-
-        let howLogin =  await AsyncStorage.getItem("howLogin");
-
-        if(howLogin === "kakao"){
-            logoutWithKakao();
-        }else if(howLogin === "googole"){
-            logoutWithGoogle();    
-        }
-    }
-
     /**
      * 로그아웃 Alert
      */
@@ -36,6 +24,17 @@ function MyScreen({navigation}) {
                 },
               ],
         );
+    }
+
+    // 로그인 경로에 따른 분기 처리
+    async function setLogout(){
+        let howLogin =  await AsyncStorage.getItem("howLogin");
+
+        if(howLogin === "kakao"){
+            logoutWithKakao();
+        }else if(howLogin === "googole"){
+            logoutWithGoogle();    
+        }
     }
 
     /**

@@ -61,9 +61,9 @@ const cafes = [
  * @param param
  * @returns 
  */
-function CafeMenuSlidingUpPanel({panelRef}){
+function CafeMenuSlidingUpPanel({cafeListPanelRef, maxHeight}){
     return (
-        <SlidingUpPanel containerStyle={{flex: 1, maxHeight : '100%', alignSelf: undefined}} ref={c => panelRef.current = c}>
+        <SlidingUpPanel containerStyle={{flex: 1, maxHeight : maxHeight, alignSelf: undefined}} ref={c => cafeListPanelRef.current = c}>
             <View style={styles.slidingUpPanel}>
                 <ScrollView>
                     <>

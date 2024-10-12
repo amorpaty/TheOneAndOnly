@@ -2,14 +2,15 @@ import React, { useEffect, useRef, useState } from "react";
 import { Text, View } from "react-native";
 import MapView, { MapMarker, Marker, PROVIDER_GOOGLE } from "react-native-maps";
 import Geolocation from '@react-native-community/geolocation';
+import SlidingUpPanel from 'rn-sliding-up-panel';
+import CafeMenuSlidingUpPanel from "../components/home/CafeMenuSlidingUpPanel";
 import FloatingLocationButton from "../components/home/FloatingLocationButton";
 import FloatCafeListButton from "../components/home/FloatingCafeListButton";
 import KeywordSearchBar from "../components/home/KeywordSearchBar";
 import { getKeywords } from "../lib/keywords";
 import {getSearchKeywordCafeList} from "../lib/cafeList";
+import coffeeIcon from "../assets/src/image/coffeeIcon.png"
 
-import SlidingUpPanel from 'rn-sliding-up-panel';
-import CafeMenuSlidingUpPanel from "../components/home/CafeMenuSlidingUpPanel";
 
 /**
  * 24.09.24 최초생성
@@ -26,15 +27,14 @@ function HomeScreen() {
     //지도 현재 위치 조회 컴포넌트 구현
     const [location, setLocation] = useState(defaultPosition);
     const [keywords, setKeywords] = useState([]);
-    const [selectedTag, setSelectedTag] = useState("");
     const [cafePoiList, setCafePoiList] = useState([]);
-
-    const panelRef = useRef<SlidingUpPanel | null>(null);      
+    const [cafeInfoPanelMaxHeight, setCafeInfoPanelMaxHeight] = useState("100%");
+    const cafeListPanelRef = useRef<SlidingUpPanel | null>(null);    
 
     //로딩되면 키워드 목록과 현재 위치 조회
     useEffect(() => {
         fetchKeywords();
-        getCurrentPosition();
+        //getCurrentPosition();
     }, []);
 
     //키워드 목록 가져오기
@@ -52,13 +52,8 @@ function HomeScreen() {
      */
     async function fetchCafeList(selectedTag : Object = {}){
         try {
-
-            console.log("keywordId", selectedTag.keywordId)
             const fetchedCafeList = await getSearchKeywordCafeList(selectedTag.keywordId);  // 비동기 데이터 조회
-
-            console.log("fetchedCafeList", fetchedCafeList)
             setCafePoiList(Object(fetchedCafeList)); // 상태에 데이터 저장
-
         } catch (error) {
             console.error("Failed to fetch fetchCafeList:", error); // 오류 처리
         }
@@ -66,8 +61,7 @@ function HomeScreen() {
 
     //키워드 선택 시 키워드에 맞는 카페 조회
     function handleKeywordPress(keyword : string = ""){
-        setSelectedTag(keyword);
-        fetchCafeList(selectedTag);
+        fetchCafeList(keyword);
     };
 
     //위치 버튼 클릭 시 해당 컴포넌트 실행
@@ -85,6 +79,22 @@ function HomeScreen() {
             error => { console.log(error.code, error.message); },
             { enableHighAccuracy: true, timeout: 15000, maximumAge: 10000 },
         )
+    }
+
+    /**
+     * 카페 리스트 버튼 클릭 시 SlidingPanel show
+     */
+    function cafeListPanelShow(){
+        setCafeInfoPanelMaxHeight("100%")
+        cafeListPanelRef.current?.show(10000);
+    }
+
+    /**
+     * 카페 POI 클릭 시 SlidingPanel show
+     */
+    function cafeInfoPanelShow(){
+        setCafeInfoPanelMaxHeight("30%")
+        cafeListPanelRef.current?.show(10000);
     }
 
     return (
@@ -105,17 +115,19 @@ function HomeScreen() {
                  * 카페 POI 표출 
                  */}
                 {cafePoiList.map((poi) => (
-                    <Marker coordinate={{latitude: Number(poi.y), longitude: Number(poi.x)}}
-                        title="this is a marker"
-                        description="this is a marker example"
+                    <Marker 
+                        key={poi.id} 
+                        coordinate={{latitude: Number(poi.y), longitude: Number(poi.x)}}
+                        icon={coffeeIcon}
+                        onPress={cafeInfoPanelShow}
                     />
                  ))}
 
             </MapView>
             <KeywordSearchBar keywords={keywords} handleKeywordPress={handleKeywordPress} />
-            <FloatCafeListButton panelRef={panelRef} /> 
+            <FloatCafeListButton cafeListPanelShow={cafeListPanelShow}/> 
             <FloatingLocationButton handleOnPress={handleOnPress} /> 
-            <CafeMenuSlidingUpPanel panelRef={panelRef} /> 
+            <CafeMenuSlidingUpPanel cafeListPanelRef={cafeListPanelRef} maxHeight={cafeInfoPanelMaxHeight} /> 
         </View>
     )
 
