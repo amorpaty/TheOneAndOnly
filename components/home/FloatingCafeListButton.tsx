@@ -3,7 +3,7 @@ import { Platform, Pressable, StyleSheet, View } from "react-native";
 import Icon from 'react-native-vector-icons/MaterialIcons';
 
 //카페목록 버튼
-function FloatingCafeListButton({cafeListPanelShow}){
+function FloatingCafeListButton({cafeListPanelRef}){
     return (
         <View style={styles.wrapper}>
             <Pressable style = {({pressed})=> [
@@ -13,7 +13,7 @@ function FloatingCafeListButton({cafeListPanelShow}){
                 }
             ]}
             android_ripple={{color :  '#57382D'}}
-            onPress={cafeListPanelShow}
+            onPress={() => cafeListPanelRef.current.show()}
             >
             <Icon name="menu" size={24} style={styles.icon} />
             </Pressable>

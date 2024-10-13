@@ -61,30 +61,28 @@ const cafes = [
  * @param param
  * @returns 
  */
-function CafeMenuSlidingUpPanel({cafeListPanelRef, maxHeight}){
+function CafeMenuSlidingUpPanel({cafeListPanelRef}){
     return (
-        <SlidingUpPanel containerStyle={{flex: 1, maxHeight : maxHeight, alignSelf: undefined}} ref={c => cafeListPanelRef.current = c}>
+        <SlidingUpPanel key={0} containerStyle={{flex: 1, maxHeight : '100%'}} ref={cafeListPanelRef}>
             <View style={styles.slidingUpPanel}>
                 <ScrollView>
-                    <>
-                        <View style={styles.searchContainer}>
-                            <Text style={styles.search}>검색어 입력</Text>
-                            <Text style={styles.sort}>인기순</Text>
-                        </View>
+                    <View style={styles.searchContainer}>
+                        <Text style={styles.search}>검색어 입력</Text>
+                        <Text style={styles.sort}>인기순</Text>
+                    </View>
 
-                        {/* 카페 리스트 */}
-                        {cafes.map((cafe, index) => (
-                            <View key={index} style={styles.cafeItem}>
-                                <Text style={styles.cafeName}>{cafe.name} {cafe.time} <Text style={styles.status}>{cafe.status}</Text></Text>
-                                <Text style={styles.tags}>{cafe.tags}</Text>
-                                <View style={styles.imageContainer}>
-                                    {cafe.images.map((image, idx) => (
-                                    <Image key={idx} style={styles.cafeImage} source={{ uri: image }} />
-                                    ))}
-                                </View>
+                    {/* 카페 리스트 */}
+                    {cafes.map((cafe, index) => (
+                        <View key={index} style={styles.cafeItem}>
+                            <Text style={styles.cafeName}>{cafe.name} {cafe.time} <Text style={styles.status}>{cafe.status}</Text></Text>
+                            <Text style={styles.tags}>{cafe.tags}</Text>
+                            <View style={styles.imageContainer}>
+                                {cafe.images.map((image, idx) => (
+                                <Image key={idx} style={styles.cafeImage} source={{ uri: image }} />
+                                ))}
                             </View>
-                        ))}
-                    </>
+                        </View>
+                    ))}
                 </ScrollView>
             </View>
         </SlidingUpPanel>
