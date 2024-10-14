@@ -1,16 +1,16 @@
 import React, { useEffect, useRef, useState } from "react";
 import { StyleSheet, Text, View } from "react-native";
-import MapView, { Callout, MapMarker, Marker, PROVIDER_GOOGLE } from "react-native-maps";
+import MapView, { Callout, Marker, PROVIDER_GOOGLE } from "react-native-maps";
+import coffeeIcon from "../assets/src/image/coffeeIcon.png"
 import Geolocation from '@react-native-community/geolocation';
 import SlidingUpPanel from 'rn-sliding-up-panel';
 import CafeMenuSlidingUpPanel from "../components/home/CafeMenuSlidingUpPanel";
-import CafeInfoSlidingUpPanel from "../components/home/CafeInfoSlidingUpPanel";
 import FloatingLocationButton from "../components/home/FloatingLocationButton";
 import FloatCafeListButton from "../components/home/FloatingCafeListButton";
 import KeywordSearchBar from "../components/home/KeywordSearchBar";
 import { getKeywords } from "../lib/keywords";
 import {getSearchKeywordCafeList} from "../lib/cafeList";
-import coffeeIcon from "../assets/src/image/coffeeIcon.png"
+import Icon from "react-native-vector-icons/MaterialIcons";
 
 
 /**
@@ -29,7 +29,7 @@ function HomeScreen() {
     const [location, setLocation] = useState(defaultPosition);
     const [keywords, setKeywords] = useState([]);
     const [cafePoiList, setCafePoiList] = useState([]);
-    const [cafeInfo, setCafeInfo] = useState({});    
+    //const [cafeInfo, setCafeInfo] = useState({});    
 
     const cafeListPanelRef = useRef<SlidingUpPanel | null>(null);    
     const cafeInfoPanelRef = useRef<SlidingUpPanel | null>(null);    
@@ -66,6 +66,11 @@ function HomeScreen() {
     function handleKeywordPress(keyword : Object = {}){
         fetchCafeList(keyword);
     };
+
+    //카카오톡 공유하기 
+    function handleShare(seletedCafe : Object = {}){
+
+    }
 
     //위치 버튼 클릭 시 해당 컴포넌트 실행
     function handleOnPress() {
@@ -106,13 +111,19 @@ function HomeScreen() {
                         key={poi.id + Math.random()} 
                         coordinate={{latitude: Number(poi.y), longitude: Number(poi.x)}}
                         icon={coffeeIcon}
-                        calloutAnchor={{ x: 0.5, y: 4.5 }}
+                        calloutAnchor={{ x: 0.5, y: 5 }}
                     >
                         {/* 카페 정보 Overlay */}
                         <Callout tooltip={true} style={{ alignItems: 'center'}} >
                             <View style={styles.container}>
                                 {/* 카페명 및 주소 */}
-                                <Text style={styles.title}>{poi.place_name}</Text>
+                                <View style={styles.titleHeaderContainer}>
+                                    <Text style={styles.title}>{poi.place_name}</Text>
+                                    <View style={styles.iconContainer}>
+                                        <Icon name="ios-share" size={20} style={{color : "black", marginRight : 5}} onPress={() => handleShare(poi)}></Icon>
+                                        <Icon name="favorite-border" size={20} style={{color : "black"}}></Icon>
+                                    </View>
+                                </View>
                                 <View style={styles.addressContainer}>
                                     <Text>{poi.road_address_name}</Text>
                                     <Text>{poi.phone}</Text>
@@ -154,6 +165,14 @@ const styles = StyleSheet.create({
     addressContainer : {
        fontSize : 12,         
        paddingTop: 5,
+    },
+    titleHeaderContainer : {
+        flexDirection: 'row',
+        justifyContent: 'space-between',
+    },
+    iconContainer:{
+        flexDirection: 'row',
+        justifyContent: 'space-between',
     },
     imagesContainer: {
         flexDirection: 'row',

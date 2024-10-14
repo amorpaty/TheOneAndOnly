@@ -1,7 +1,7 @@
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import React, { useEffect, useState } from "react";
-import { Alert, StyleSheet, Text, TouchableOpacity, View } from "react-native";
-import { logout } from "@react-native-seoul/kakao-login";
+import { Alert, Image, StyleSheet, Text, TouchableOpacity, View } from "react-native";
+import { getProfile, logout } from "@react-native-seoul/kakao-login";
 
 /**
  * 24.10.06
@@ -9,6 +9,27 @@ import { logout } from "@react-native-seoul/kakao-login";
  * @returns 
  */
 function MyScreen({navigation}) {
+
+    const [userInfo, setUserInfo] = useState({}); //유저 정보 저장
+
+    /**
+     * 진입 시 user정보(profile, nicname) 가져오기
+     */
+    useEffect(() => {
+        
+        // 유저 정보 조회
+        async function getUserInfo(){
+            const howLogin = await AsyncStorage.getItem("howLogin"); 
+
+            if(howLogin === "kakao"){//카카오 유저정보 조회
+                const profile = await getProfile();
+                setUserInfo(profile);
+            }else if(howLogin === "google"){//구글 유저정보 조회
+            }
+        }
+
+        getUserInfo();
+    }, [])
 
     /**
      * 로그아웃 Alert
@@ -45,7 +66,7 @@ function MyScreen({navigation}) {
         if(result === "Successfully logged out"){
             navigation.navigate("SignInScreen");
             AsyncStorage.clear();
-        }
+        }``
     }
 
     /**
@@ -59,18 +80,23 @@ function MyScreen({navigation}) {
         <View style={{flex : 1}}>
             {/* 사용자 정보 카드 */}
             <View style={styles.card}>
-                <Text style={styles.greeting}>안녕하세요 홍길동님 :)</Text>
-                <Text style={styles.description}>홍길동님의 활동내역을 통해 분석한 취향 카페 TOP 3 입니다.</Text>
+                <View style={styles.profileContainer}>
+                    {userInfo.thumbnailImageUrl != null ?
+                        <Image src={userInfo.thumbnailImageUrl} style={styles.profileImage}/>
+                    : null}
+                </View>
+                <Text style={styles.greeting}>안녕하세요 {userInfo.nickname}님 :)</Text>
+                <Text style={styles.description}>홍길동님의 활동내역을 통해 분석한 {"\n"}취향 카페 TOP 3 입니다.</Text>
                 <View style={styles.tagContainer}>
-                <TouchableOpacity style={styles.tagButton}>
-                    <Text style={styles.tagText}># 모던한</Text>
-                </TouchableOpacity>
-                <TouchableOpacity style={styles.tagButton}>
-                    <Text style={styles.tagText}># 커피 맛집</Text>
-                </TouchableOpacity>
-                <TouchableOpacity style={styles.tagButton}>
-                    <Text style={styles.tagText}># 노키즈존</Text>
-                </TouchableOpacity>
+                    <TouchableOpacity style={styles.tagButton}>
+                        <Text style={styles.tagText}># 모던한</Text>
+                    </TouchableOpacity>
+                    <TouchableOpacity style={styles.tagButton}>
+                        <Text style={styles.tagText}># 커피 맛집</Text>
+                    </TouchableOpacity>
+                    <TouchableOpacity style={styles.tagButton}>
+                        <Text style={styles.tagText}># 노키즈존</Text>
+                    </TouchableOpacity>
                 </View>
             </View>
 
@@ -88,10 +114,7 @@ function MyScreen({navigation}) {
                 <TouchableOpacity style={styles.menuItem}>
                     <Text style={styles.menuText}>1:1 문의내역</Text>
                 </TouchableOpacity>
-                <TouchableOpacity 
-                    style={styles.menuItem}
-                    onPress={handleLogOut}
-                >
+                <TouchableOpacity style={styles.menuItem} onPress={handleLogOut} >
                     <Text style={styles.menuText}>로그아웃</Text>
                 </TouchableOpacity>
             </View>
@@ -100,6 +123,18 @@ function MyScreen({navigation}) {
 }
 
 const styles = StyleSheet.create ({
+    profileContainer : {
+        justifyContent: 'center',
+        alignItems: 'center',
+        overflow: 'hidden', // 부모 컨테이너에서 이미지가 넘치지 않도록 설정
+        paddingBottom : 10
+    }, 
+    profileImage : {
+        width: 50, 
+        height: 50, 
+        borderRadius: 50 / 2,
+        resizeMode: 'cover', // 이미지를 커버로 설정하여 크기에 맞게 채움
+    },
     card: {
         backgroundColor: '#57382D',
         padding: 20,

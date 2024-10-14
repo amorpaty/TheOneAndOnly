@@ -18,7 +18,7 @@ function FloatingLocationButton({handleOnPress}){
             ]}
             android_ripple={{color :  '#57382D'}}
             onPress={handleOnPress}>
-            <Icon name="location-searching" size={24} style={styles.icon} />
+            <Icon name="my-location" size={24} style={styles.icon} />
             </Pressable>
         </View>
     );
