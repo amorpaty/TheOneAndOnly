@@ -1,10 +1,12 @@
 import React from "react";
 import { View, Image, StyleSheet, Text, TouchableOpacity } from "react-native";
-import {login } from "@react-native-seoul/kakao-login";
+import {getProfile, login } from "@react-native-seoul/kakao-login";
 import logo from "../assets/src/image/logo.png";
 import kakaoLoginButtonImg from "../assets/src/image/kakaoLoginButton.png";
 import googleLoginButtonImg from "../assets/src/image/googleLoginButton.png";
 import AsyncStorage from "@react-native-async-storage/async-storage"
+import { getEmailUser, getUser, setUser } from "../lib/user";
+import uuid from 'react-native-uuid';
 
 /**
  * 24.10.07 
@@ -18,11 +20,25 @@ function SignInScreen({navigation}){
         try {
             const token = await login().catch((error) => console.log("SignIn error", error));
 
-            if(!!!token){
-                return
+            if(!!!token){ 
+              return;
+            }
+
+            const userInfo = await getProfile().catch((error) => console.log("getProfile error", error));
+
+            if(!!!userInfo){
+              return; 
+            }
+
+            const user = await getEmailUser(userInfo.email);
+
+            if(user.length == 0){
+              user[0] = {id : uuid.v4()};
+              setUser({id : user[0].id, email : userInfo.email, nickname : userInfo.nickname})
             }
 
             AsyncStorage.setItem('key', JSON.stringify(token));
+            AsyncStorage.setItem("userId", user[0].id);
             AsyncStorage.setItem('howLogin', "kakao");
             
             navigation.navigate('MainTab');

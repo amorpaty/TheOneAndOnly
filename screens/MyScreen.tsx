@@ -1,7 +1,9 @@
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import React, { useEffect, useState } from "react";
 import { Alert, Image, StyleSheet, Text, TouchableOpacity, View } from "react-native";
-import { getProfile, logout } from "@react-native-seoul/kakao-login";
+import { getProfile, logout, unlink } from "@react-native-seoul/kakao-login";
+import { getUser, removeUser } from "../lib/user";
+import { Divider } from "react-native-paper";
 
 /**
  * 24.10.06
@@ -74,6 +76,57 @@ function MyScreen({navigation}) {
      */
     async function logoutWithGoogle(){
 
+        
+    }
+
+    //탈퇴하기(연결해제) Alert
+    function handleUnlink(){
+        Alert.alert("", "탈퇴 하시겠습니까?",
+            [
+                {text: 'Cancel', onPress: () => {}, style: 'cancel'},
+                {
+                  text: 'OK',
+                  onPress: setUnlink,
+                  style: 'destructive',
+                },
+              ],
+        );
+    }
+
+    // 로그인 경로에 따른 탈퇴 분기 처리
+    async function setUnlink(){
+        let howLogin =  await AsyncStorage.getItem("howLogin");
+
+        if(howLogin === "kakao"){
+            unLinkWithKakao();
+        }else if(howLogin === "googole"){
+            unLinkWithGoogle();    
+        }        
+    }
+
+    //카카오톡 연결 해제 
+    async function unLinkWithKakao(){
+
+        const userId =  await AsyncStorage.getItem("userId");
+        const userInfo = await getUser(userId);
+
+        if(userInfo.length == 0){
+            return;
+        }
+
+        removeUser(userInfo[0].id);
+        const result = await unlink(userInfo[0].email);
+
+        console.log("result", result);
+        if(result === "Successfully unlinked"){
+            navigation.navigate("SignInScreen");
+            AsyncStorage.clear();
+        }
+    }
+
+    //구글 연결 해제 
+    async function unLinkWithGoogle(){
+
     }
 
     return (
@@ -114,8 +167,12 @@ function MyScreen({navigation}) {
                 <TouchableOpacity style={styles.menuItem}>
                     <Text style={styles.menuText}>1:1 문의내역</Text>
                 </TouchableOpacity>
-                <TouchableOpacity style={styles.menuItem} onPress={handleLogOut} >
+                <Divider style={{margin : 17}}></Divider>
+                <TouchableOpacity style={styles.menuTopMarginItem} onPress={handleLogOut} >
                     <Text style={styles.menuText}>로그아웃</Text>
+                </TouchableOpacity>
+                <TouchableOpacity style={styles.menuItem} onPress={handleUnlink} >
+                    <Text style={styles.menuText}>탈퇴하기</Text>
                 </TouchableOpacity>
             </View>
         </View>
@@ -172,6 +229,18 @@ const styles = StyleSheet.create ({
     menu: {
         marginHorizontal: 20,
         marginTop: 20,
+    },
+    menuTopMarginItem :{
+        backgroundColor: '#fff',
+        paddingVertical: 15,
+        paddingHorizontal: 20,
+        borderRadius: 10,
+        marginTop : 5,
+        marginBottom: 10,
+        shadowColor: '#000',
+        shadowOpacity: 0.1,
+        shadowRadius: 5,
+        elevation: 3,
     },
     menuItem: {
         backgroundColor: '#fff',
