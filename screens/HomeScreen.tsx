@@ -31,7 +31,6 @@ function HomeScreen() {
     const [keywords, setKeywords] = useState([]); // 키워드 조회 컴포넌트 구현
     const [cafePoiList, setCafePoiList] = useState([]); // 카페 조회 컴포넌트 구현 (키워드 별)
     const [panelContent, setPanelContent] = useState('cafeList'); // 패널의 콘텐츠 상태
-    const [selectedCafe, setSeletedCafe] = useState(null); // 클릭된 POI 카페 정보
     const [cafeList, setCafeList] = useState([]); // SlidingUpPanel에 표시될 카페 리스트
 
     const cafeListPanelRef = useRef<SlidingUpPanel | null>(null);    
@@ -82,7 +81,7 @@ function HomeScreen() {
             if(cafeListPanelRef.current){
                 cafeListPanelRef.current?.show(1000);
             }
-        }, 500)
+        }, 1000)
     }
 
     //카페 찜하기 
@@ -94,10 +93,9 @@ function HomeScreen() {
     async function updateUserFavCafe(seletedCafe : Object = {}) {
 
         const userId = await AsyncStorage.getItem("userId");
-        const cafeCopyList = [...cafePoiList];
         const id = seletedCafe.id;
-        const cafe = {...seletedCafe};
         const userFavCafe = await getUserFavCafe(userId, id);  // 비동기 데이터 조회
+        const cafe = {...seletedCafe};
 
         if(userFavCafe.length > 0){
             removeUserFavCafe(userId, id);
@@ -106,7 +104,10 @@ function HomeScreen() {
             setUserFavCafe(userId, id);
             cafe.fav = "Y";
         }
+        setCafeList([cafe]);
 
+        
+        const cafeCopyList = [...cafePoiList];
         const resultCafeList : Object[] = [];
 
         cafeCopyList.forEach(s => {
@@ -116,9 +117,8 @@ function HomeScreen() {
                 s.fav = 'Y'
             }
             resultCafeList.push(s);
-        })
+        });
 
-        setCafeList([cafe]);
         setCafePoiList(resultCafeList);
     }
 
@@ -143,12 +143,25 @@ function HomeScreen() {
     const memoizedCafeList = useMemo(() => {
         return cafeList.map((cafe, index) => (
             <View key={index} style={styles.cafeItem}>
-                <View style={styles.iconContainer}>
+                <View style={styles.headerContainer}>
                     <View style={{}}>
                         <Text style={styles.cafeName}>{cafe.place_name}</Text>
                     </View>
-                    <Icon name="ios-share" size={20} style={{ color: 'black' , }} />
-                    <Icon name={cafe.fav === "Y" ? "favorite" : "favorite-border"} size={20} style={{ color: 'black' }} onPress={() => handleFavoriteCafe(cafe)}/>
+                    <View style={styles.iconContainer}>
+                        <Icon name="ios-share" size={20} style={{ color: 'black' , }} />
+                        <Icon name={cafe.fav === "Y" ? "favorite" : "favorite-border"} size={20} style={{color : cafe.fav === "Y" ? "red" : "black" }} onPress={() => handleFavoriteCafe(cafe)}/>
+                    </View>
+                </View>
+                <View style={styles.tags}>
+                    <ScrollView
+                        horizontal={true} // 가로 스크롤 활성화
+                        showsHorizontalScrollIndicator={false} // 스크롤바 숨기기 (선택 사항)
+                        contentContainerStyle={styles.scrollContent} // 스크롤 내용의 스타일
+                    >
+                        {keywords.map((tag) => (
+                            <Text key={tag.keywordId} style={styles.tagText}> #{tag.keywordName} </Text>
+                        ))}
+                    </ScrollView>
                 </View>
                 <View style={styles.imageContainer}>
                     {/* {cafe.images && cafe.images.map((image, idx) => (
@@ -195,8 +208,8 @@ function HomeScreen() {
             <KeywordSearchBar keywords={keywords} handleKeywordPress={handleKeywordPress} />
             <FloatCafeListButton openMenuPanel={openMenuPanel}/> 
             <FloatingLocationButton handleOnPress={handleOnPress} /> 
-            {/** 슬라이딩패널 */}
-            <SlidingUpPanel key={0} containerStyle={{ maxHeight: panelContent === "cafeList" ? '100%' : 300, bottom : 0 }}  ref={cafeListPanelRef}>
+            {/** 카페 정보 및 검색 슬라이딩패널 */}
+            <SlidingUpPanel containerStyle={{ maxHeight: panelContent === "cafeList" ? '100%' : 200, bottom : 0 }}  ref={cafeListPanelRef}>
                 <View style={styles.slidingUpPanel}>
                     <ScrollView>
                         {panelContent == "cafeList" ? 
@@ -236,6 +249,11 @@ const styles = StyleSheet.create({
         fontSize: 18,
         fontWeight: 'bold',
     },
+    headerContainer : {
+        flexDirection: 'row',
+        justifyContent: 'space-between',
+        marginTop : 10,
+    },
     addressContainer : {
        fontSize : 12,         
        paddingTop: 5,
@@ -259,6 +277,11 @@ const styles = StyleSheet.create({
         color : "#fff",
         backgroundColor : "#fff",
     },
+    scrollContent: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        paddingHorizontal: 5,
+    },
     searchContainer: {
         flexDirection: 'row',
         justifyContent: 'space-between',
@@ -274,8 +297,8 @@ const styles = StyleSheet.create({
     },
     cafeItem: {
         padding: 15,
-        borderBottomWidth: 1,
-        borderBottomColor: '#eee',
+        // borderBottomWidth: 1,
+        // borderBottomColor: '#eee',
     },
     cafeName: {
         fontSize: 16,
@@ -285,8 +308,13 @@ const styles = StyleSheet.create({
         color: 'red',
     },
     tags: {
-        marginTop: 5,
+        marginTop: 10,
         color: '#999',
+    },
+    tagText: {
+        fontSize: 14,
+        fontWeight: '500',
+        color: '#3a3b3a',
     },
     imageContainer: {
         flexDirection: 'row',

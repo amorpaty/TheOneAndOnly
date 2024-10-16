@@ -22,7 +22,7 @@ function KeywordTags({keywords, handleKeywordPress}) {
             onPress={() => handleKeywordPress(tag)}
             style={styles.tagButton}
           >
-            <Text style={styles.tagText}>{tag.keywordName}</Text>
+            <Text style={styles.tagText}> #{tag.keywordName} </Text>
           </Button>
         ))}
       </ScrollView>
