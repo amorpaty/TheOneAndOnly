@@ -158,7 +158,7 @@ function MyScreen({navigation}) {
                 <TouchableOpacity style={styles.menuItem}>
                     <Text style={styles.menuText}>최근 조회한 카페</Text>
                 </TouchableOpacity>
-                <TouchableOpacity style={styles.menuItem}>
+                <TouchableOpacity style={styles.menuItem} onPress={() => navigation.navigate('MyFavoriteCafeScreen')}>
                     <Text style={styles.menuText}>찜한 카페</Text>
                 </TouchableOpacity>
                 <TouchableOpacity style={styles.menuItem}>

@@ -1,8 +1,8 @@
-import React, { useEffect } from "react";
+import React from "react";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import MainTab from "./MainTab";
 import SignInScreen from "./SignInScreen";
-import AsyncStorage from "@react-native-async-storage/async-storage";
+import MyFavoriteCafeScreen from "./MyFavoriteCafeScreen";
 
 const Stack = createNativeStackNavigator();
 
@@ -18,6 +18,11 @@ function RootStack({isLogin}) {
                 name="MainTab"
                 component={MainTab}
                 options={{headerShown : false}}
+            />
+            <Stack.Screen 
+                name="MyFavoriteCafeScreen"
+                component={MyFavoriteCafeScreen}
+                options={{headerShown : true, headerTitle : "찜한 카페"}}
             />
         </Stack.Navigator>
     );

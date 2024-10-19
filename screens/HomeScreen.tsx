@@ -1,5 +1,5 @@
 import React, { useEffect, useMemo, useRef, useState } from "react";
-import { Image, ScrollView, StyleSheet, View, Text, ActivityIndicator  } from "react-native";
+import { Image, ScrollView, StyleSheet, View, Text, ActivityIndicator } from "react-native";
 import MapView, { Marker, PROVIDER_GOOGLE } from "react-native-maps";
 import coffeeIcon from "../assets/src/image/coffeeIcon.png"
 import Geolocation from '@react-native-community/geolocation';
@@ -8,7 +8,7 @@ import FloatingLocationButton from "../components/home/FloatingLocationButton";
 import FloatCafeListButton from "../components/home/FloatingCafeListButton";
 import KeywordSearchBar from "../components/home/KeywordSearchBar";
 import { getKeywords } from "../lib/keywords";
-import {getSearchKeywordCafeList} from "../lib/cafeList";
+import { getSearchCafeList, getSearchKeywordCafeList } from "../lib/cafeList";
 import Icon from "react-native-vector-icons/MaterialIcons";
 import { getUserFavCafe, removeUserFavCafe, setUserFavCafe } from "../lib/userFavCafe";
 import AsyncStorage from "@react-native-async-storage/async-storage";
@@ -25,21 +25,30 @@ const defaultPosition = {
     longitude: 126.986
 }
 
-function HomeScreen() {
-    
+function HomeScreen({ route }) {
     const [location, setLocation] = useState(defaultPosition); //지도 현재 위치 조회 컴포넌트 구현
     const [keywords, setKeywords] = useState([]); // 키워드 조회 컴포넌트 구현
     const [cafePoiList, setCafePoiList] = useState([]); // 카페 조회 컴포넌트 구현 (키워드 별)
     const [panelContent, setPanelContent] = useState('cafeList'); // 패널의 콘텐츠 상태
     const [cafeList, setCafeList] = useState([]); // SlidingUpPanel에 표시될 카페 리스트
 
-    const cafeListPanelRef = useRef<SlidingUpPanel | null>(null);    
+    const cafeListPanelRef = useRef<SlidingUpPanel | null>(null);
 
     //로딩되면 키워드 목록과 현재 위치 조회
     useEffect(() => {
         fetchKeywords();
         //getCurrentPosition();
     }, []);
+
+    // parameter 넘어올 시 (특정 카페 조회)
+    useEffect(() => {
+        if (route.params) {
+            const routeParamCafe = route.params.cafe;
+            setLocation({ latitude: Number(routeParamCafe.y), longitude: Number(routeParamCafe.x) });
+            setCafePoiList([routeParamCafe]);
+            setCafeList([routeParamCafe]);
+        }
+    }, [route])
 
     //키워드 목록 가져오기
     async function fetchKeywords() {
@@ -54,7 +63,7 @@ function HomeScreen() {
     /**
      * 키워드에 맞는 카페 조회 (firestore)
      */
-    async function fetchCafeList(selectedTag : Object = {}){
+    async function fetchCafeList(selectedTag: Object = {}) {
         try {
             const fetchedCafeList = await getSearchKeywordCafeList(selectedTag.keywordId);  // 비동기 데이터 조회
             setCafePoiList(fetchedCafeList); // 상태에 데이터 저장
@@ -64,56 +73,72 @@ function HomeScreen() {
     }
 
     //키워드 선택 시 키워드에 맞는 카페 조회
-    function handleKeywordPress(keyword : Object = {}){
+    function handleKeywordPress(keyword: Object = {}) {
         fetchCafeList(keyword);
     };
 
     //카카오톡 공유하기 
-    function handleShare(seletedCafe : Object = {}){
+    function handleShare(seletedCafe: Object = {}) {
 
     }
 
     //카페 패널 표출 정보 open 
-    function openMenuPanel(category : string = "", seletedCafe : Object = {}){
+    async function openMenuPanel(category: string = "", seletedCafe: Object = {}) {
+
+        if (category === "cafeList") {
+            //todo cafeList 조회
+            const cafeList = await getSearchCafeList("");
+            setCafeList(cafeList);
+        } else if (category === "info") {
+            setCafeList([seletedCafe]);
+        }
+
         setPanelContent(category);
-        setCafeList([seletedCafe]);
         setTimeout(() => {
-            if(cafeListPanelRef.current){
+            if (cafeListPanelRef.current) {
                 cafeListPanelRef.current?.show(1000);
             }
-        }, 1000)
+        }, 2000)
     }
 
     //카페 찜하기 
-    function handleFavoriteCafe(seletedCafe : Object = {}){
+    function handleFavoriteCafe(seletedCafe: Object = {}) {
         updateUserFavCafe(seletedCafe);
     }
 
     //카페 찜 insert delete
-    async function updateUserFavCafe(seletedCafe : Object = {}) {
+    async function updateUserFavCafe(seletedCafe: Object = {}) {
 
         const userId = await AsyncStorage.getItem("userId");
         const id = seletedCafe.id;
         const userFavCafe = await getUserFavCafe(userId, id);  // 비동기 데이터 조회
-        const cafe = {...seletedCafe};
+        const cafe = { ...seletedCafe };
+        const slidingCafeList: any = [];
 
-        if(userFavCafe.length > 0){
+        if (userFavCafe.length > 0) {
             removeUserFavCafe(userId, id);
             cafe.fav = "N";
-        }else{
+        } else {
             setUserFavCafe(userId, id);
             cafe.fav = "Y";
         }
-        setCafeList([cafe]);
 
-        
-        const cafeCopyList = [...cafePoiList];
-        const resultCafeList : Object[] = [];
+        cafeList.forEach(s => {
+            if (s.id == cafe.id) {
+                s = cafe;
+            }
+            slidingCafeList.push(s);
+        })
 
-        cafeCopyList.forEach(s => {
-            if(s.id == id && s.fav == 'Y'){
+        setCafeList(slidingCafeList);
+
+        const cafePoiCopyList = [...cafePoiList];
+        const resultCafeList: Object[] = [];
+
+        cafePoiCopyList.forEach(s => {
+            if (s.id == id && s.fav == 'Y') {
                 s.fav = 'N'
-            }else if(s.id == id && s.fav == 'N'){
+            } else if (s.id == id && s.fav == 'N') {
                 s.fav = 'Y'
             }
             resultCafeList.push(s);
@@ -148,8 +173,8 @@ function HomeScreen() {
                         <Text style={styles.cafeName}>{cafe.place_name}</Text>
                     </View>
                     <View style={styles.iconContainer}>
-                        <Icon name="ios-share" size={20} style={{ color: 'black' , }} />
-                        <Icon name={cafe.fav === "Y" ? "favorite" : "favorite-border"} size={20} style={{color : cafe.fav === "Y" ? "red" : "black" }} onPress={() => handleFavoriteCafe(cafe)}/>
+                        <Icon name="ios-share" size={20} style={{ color: 'black', }} />
+                        <Icon name={cafe.fav === "Y" ? "favorite" : "favorite-border"} size={20} style={{ color: cafe.fav === "Y" ? "red" : "black" }} onPress={() => handleFavoriteCafe(cafe)} />
                     </View>
                 </View>
                 <View style={styles.tags}>
@@ -195,30 +220,30 @@ function HomeScreen() {
                  * 카페 POI 표출 
                  */}
                 {cafePoiList.map((poi) => (
-                    <Marker 
-                        key={poi.id + Math.random()} 
-                        coordinate={{latitude: Number(poi.y), longitude: Number(poi.x)}}
+                    <Marker
+                        key={poi.id + Math.random()}
+                        coordinate={{ latitude: Number(poi.y), longitude: Number(poi.x) }}
                         icon={coffeeIcon}
                         calloutAnchor={{ x: 0.5, y: 5 }}
                         onPress={() => openMenuPanel("info", poi)}
                     >
                     </Marker>
-                 ))}
+                ))}
             </MapView>
             <KeywordSearchBar keywords={keywords} handleKeywordPress={handleKeywordPress} />
-            <FloatCafeListButton openMenuPanel={openMenuPanel}/> 
-            <FloatingLocationButton handleOnPress={handleOnPress} /> 
+            <FloatCafeListButton openMenuPanel={openMenuPanel} />
+            <FloatingLocationButton handleOnPress={handleOnPress} />
             {/** 카페 정보 및 검색 슬라이딩패널 */}
-            <SlidingUpPanel containerStyle={{ maxHeight: panelContent === "cafeList" ? '100%' : 200, bottom : 0 }}  ref={cafeListPanelRef}>
+            <SlidingUpPanel containerStyle={{ maxHeight: panelContent === "cafeList" ? '100%' : 200, bottom: 0 }} ref={cafeListPanelRef}>
                 <View style={styles.slidingUpPanel}>
                     <ScrollView>
-                        {panelContent == "cafeList" ? 
+                        {panelContent == "cafeList" ?
                             (
                                 <View style={styles.searchContainer}>
                                     <Text style={styles.search}>검색어 입력</Text>
                                     <Text style={styles.sort}>인기순</Text>
-                                </View>   
-                            ) 
+                                </View>
+                            )
                             : null
                         }
                         {/* 카페 리스트 */}
@@ -249,16 +274,16 @@ const styles = StyleSheet.create({
         fontSize: 18,
         fontWeight: 'bold',
     },
-    headerContainer : {
+    headerContainer: {
         flexDirection: 'row',
         justifyContent: 'space-between',
-        marginTop : 10,
+        marginTop: 10,
     },
-    addressContainer : {
-       fontSize : 12,         
-       paddingTop: 5,
+    addressContainer: {
+        fontSize: 12,
+        paddingTop: 5,
     },
-    iconContainer:{
+    iconContainer: {
         flexDirection: 'row',
         justifyContent: 'space-between',
     },
@@ -273,9 +298,9 @@ const styles = StyleSheet.create({
         borderRadius: 5,
     },
     slidingUpPanel: {
-        height : '100%',
-        color : "#fff",
-        backgroundColor : "#fff",
+        height: '100%',
+        color: "#fff",
+        backgroundColor: "#fff",
     },
     scrollContent: {
         flexDirection: 'row',
@@ -288,7 +313,7 @@ const styles = StyleSheet.create({
         padding: 15,
         borderBottomWidth: 1,
         borderBottomColor: '#eee',
-      },
+    },
     search: {
         color: '#888',
     },
