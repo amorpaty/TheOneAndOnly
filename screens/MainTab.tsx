@@ -1,7 +1,7 @@
 import React, { useEffect } from "react";
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 import HomeScreen from "./HomeScreen";
-import ReviewScreen from "./ReviewScreen";
+import VisitLogScreen from "./VisitLogScreen";
 import MyScreen from "./MyScreen";
 import Icon from "react-native-vector-icons/MaterialIcons";
 import { BackHandler } from "react-native";
@@ -21,7 +21,7 @@ function MainTab() {
     return (
         <Tab.Navigator initialRouteName="Home" screenOptions={{tabBarActiveTintColor:'#57382D', tabBarShowLabel : true, headerShown : false}}>
             <Tab.Screen name="Home" component={HomeScreen} options={{tabBarIcon:({color, size}) => (<Icon name="home" color={color} size={size}></Icon>)}}/>
-            <Tab.Screen name="REVIEW" component={ReviewScreen} options={{tabBarIcon:({color, size}) => (<Icon name="edit-note" color={color} size={size}></Icon>)}}/>
+            <Tab.Screen name="Log" component={VisitLogScreen} options={{tabBarIcon:({color, size}) => (<Icon name="edit-note" color={color} size={size}></Icon>), headerTitleStyle : {fontSize : 15}, headerTitle : "카페 방문 로그", headerShown : true}}/>
             <Tab.Screen name="MY" component={MyScreen} options={{tabBarIcon:({color, size}) => (<Icon name="account-circle" color={color} size={size}></Icon>)}}/>
         </Tab.Navigator>
     );

@@ -117,7 +117,6 @@ function MyScreen({navigation}) {
         removeUser(userInfo[0].id);
         const result = await unlink(userInfo[0].email);
 
-        console.log("result", result);
         if(result === "Successfully unlinked"){
             navigation.navigate("SignInScreen");
             AsyncStorage.clear();

@@ -1,5 +1,5 @@
 import React, { useEffect, useMemo, useRef, useState } from "react";
-import { Image, ScrollView, StyleSheet, View, Text, ActivityIndicator } from "react-native";
+import { ScrollView, StyleSheet, View, Text, ActivityIndicator, TouchableOpacity } from "react-native";
 import MapView, { Marker, PROVIDER_GOOGLE } from "react-native-maps";
 import coffeeIcon from "../assets/src/image/coffeeIcon.png"
 import Geolocation from '@react-native-community/geolocation';
@@ -25,7 +25,8 @@ const defaultPosition = {
     longitude: 126.986
 }
 
-function HomeScreen({ route }) {
+function HomeScreen({ navigation, route }) {
+
     const [location, setLocation] = useState(defaultPosition); //지도 현재 위치 조회 컴포넌트 구현
     const [keywords, setKeywords] = useState([]); // 키워드 조회 컴포넌트 구현
     const [cafePoiList, setCafePoiList] = useState([]); // 카페 조회 컴포넌트 구현 (키워드 별)
@@ -38,6 +39,7 @@ function HomeScreen({ route }) {
     useEffect(() => {
         fetchKeywords();
         //getCurrentPosition();
+        cafeListPanelRef.current?.hide();
     }, []);
 
     // parameter 넘어올 시 (특정 카페 조회)
@@ -47,6 +49,7 @@ function HomeScreen({ route }) {
             setLocation({ latitude: Number(routeParamCafe.y), longitude: Number(routeParamCafe.x) });
             setCafePoiList([routeParamCafe]);
             setCafeList([routeParamCafe]);
+            cafeListPanelRef.current?.hide();
         }
     }, [route])
 
@@ -164,14 +167,17 @@ function HomeScreen({ route }) {
         )
     }
 
+    //TODO FlatList로 변경 필요
     //cafeList를 memoized 처리하여 불필요한 재렌더링 방지
     const memoizedCafeList = useMemo(() => {
         return cafeList.map((cafe, index) => (
             <View key={index} style={styles.cafeItem}>
                 <View style={styles.headerContainer}>
-                    <View style={{}}>
+                    {/** 카페명 클릭 시 카페 상세 화면 이동 */}
+                    <TouchableOpacity onPress={() => navigation.navigate('CafeDetailTab', { cafe : cafe }) }>
                         <Text style={styles.cafeName}>{cafe.place_name}</Text>
-                    </View>
+                    </TouchableOpacity>
+                    
                     <View style={styles.iconContainer}>
                         <Icon name="ios-share" size={20} style={{ color: 'black', }} />
                         <Icon name={cafe.fav === "Y" ? "favorite" : "favorite-border"} size={20} style={{ color: cafe.fav === "Y" ? "red" : "black" }} onPress={() => handleFavoriteCafe(cafe)} />

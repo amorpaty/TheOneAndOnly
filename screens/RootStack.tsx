@@ -3,6 +3,7 @@ import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import MainTab from "./MainTab";
 import SignInScreen from "./SignInScreen";
 import MyFavoriteCafeScreen from "./MyFavoriteCafeScreen";
+import CafeDetailTab from "./CafeDetailTab";
 
 const Stack = createNativeStackNavigator();
 
@@ -18,6 +19,11 @@ function RootStack({isLogin}) {
                 name="MainTab"
                 component={MainTab}
                 options={{headerShown : false}}
+            />
+            <Stack.Screen 
+                name="CafeDetailTab"
+                component={CafeDetailTab}
+                options={{headerShown : true}}
             />
             <Stack.Screen 
                 name="MyFavoriteCafeScreen"

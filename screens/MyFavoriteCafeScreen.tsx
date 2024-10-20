@@ -1,6 +1,6 @@
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import React, { useEffect, useState } from "react";
-import { View, Text, FlatList, StyleSheet, TouchableOpacity } from "react-native";
+import { View, Text, FlatList, StyleSheet, TouchableOpacity, Touchable, ScrollView } from "react-native";
 import Icon from "react-native-vector-icons/MaterialIcons";
 import { getUserFavCafeList, removeUserFavCafe } from "../lib/userFavCafe";
 
@@ -18,10 +18,8 @@ function MyFavoriteCafeScreen({navigation}) {
         
         async function fetchUserFavCafeList(){
             const userId = await AsyncStorage.getItem("userId"); 
-            const favCafeList : Object = await getUserFavCafeList(userId);
+            const favCafeList : any[] = await getUserFavCafeList(userId);
             setUserFavCafeList(favCafeList);
-
-            console.log("userFavCafeList", userFavCafeList);
         }
     
         fetchUserFavCafeList();
@@ -56,12 +54,25 @@ function MyFavoriteCafeScreen({navigation}) {
         <View style={styles.cafeItem}>
           <View style={styles.headerContainer}>
               <View style={{}}>
-                  <Text style={styles.cafeName}>{item.place_name}</Text>
+                  <TouchableOpacity>
+                    <Text style={styles.cafeName}>{item.place_name}</Text>
+                  </TouchableOpacity>
               </View>
               <View style={styles.iconContainer}>
                   <Icon name="location-on" size={20} onPress={() => navigation.navigate('Home', { cafe : item })} />
                   <Icon name={item.fav === "Y" ? "favorite" : "favorite-border"} size={20} style={{color : item.fav === "Y" ? "red" : "black" }} onPress={() => handleFavoriteCafe(item)}/>
               </View>
+          </View>
+          <View style={styles.tags}>
+              <ScrollView
+                  horizontal={true} // 가로 스크롤 활성화
+                  showsHorizontalScrollIndicator={false} // 스크롤바 숨기기 (선택 사항)
+                  contentContainerStyle={styles.scrollContent} // 스크롤 내용의 스타일
+              >
+                  {item.keywords.map((tag) => (
+                      <Text key={tag.keywordId} style={styles.tagText}> #{tag.keywordName} </Text>
+                  ))}
+              </ScrollView>
           </View>
         </View>
         // <TouchableOpacity key={item.id} 
@@ -133,6 +144,11 @@ const styles = StyleSheet.create({
       fontSize: 14,
       color: '#888',
       marginTop: 5,
+    },
+    scrollContent: {
+      flexDirection: 'row',
+      alignItems: 'center',
+      paddingHorizontal: 5,
     },
     emptyContainer: {
       flex: 1,
