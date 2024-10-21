@@ -161,9 +161,6 @@ function MyScreen({navigation}) {
                     <Text style={styles.menuText}>찜한 카페</Text>
                 </TouchableOpacity>
                 <TouchableOpacity style={styles.menuItem}>
-                    <Text style={styles.menuText}>카페 방문 로그</Text>
-                </TouchableOpacity>
-                <TouchableOpacity style={styles.menuItem}>
                     <Text style={styles.menuText}>1:1 문의내역</Text>
                 </TouchableOpacity>
                 <Divider style={{margin : 17}}></Divider>

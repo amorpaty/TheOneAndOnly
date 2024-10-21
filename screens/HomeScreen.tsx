@@ -39,7 +39,6 @@ function HomeScreen({ navigation, route }) {
     useEffect(() => {
         fetchKeywords();
         //getCurrentPosition();
-        cafeListPanelRef.current?.hide();
     }, []);
 
     // parameter 넘어올 시 (특정 카페 조회)
@@ -49,9 +48,11 @@ function HomeScreen({ navigation, route }) {
             setLocation({ latitude: Number(routeParamCafe.y), longitude: Number(routeParamCafe.x) });
             setCafePoiList([routeParamCafe]);
             setCafeList([routeParamCafe]);
-            cafeListPanelRef.current?.hide();
         }
-    }, [route])
+
+        cafeListPanelRef.current?.hide();
+
+    }, [navigation, route])
 
     //키워드 목록 가져오기
     async function fetchKeywords() {
@@ -167,6 +168,23 @@ function HomeScreen({ navigation, route }) {
         )
     }
 
+    // 상세페이지로 넘겨줄 이벤트
+    const CustomEvent = (cafeList : []) => {
+
+        let poiList : [] = [];
+
+        cafePoiList.forEach(s => {
+            let poi = s;
+            if(s.id == cafeList[0].id){
+                poi = cafeList[0];
+            }
+            poiList.push(poi);
+        })
+
+        setCafePoiList(poiList);
+        setCafeList(cafeList);
+    }
+
     //TODO FlatList로 변경 필요
     //cafeList를 memoized 처리하여 불필요한 재렌더링 방지
     const memoizedCafeList = useMemo(() => {
@@ -174,7 +192,7 @@ function HomeScreen({ navigation, route }) {
             <View key={index} style={styles.cafeItem}>
                 <View style={styles.headerContainer}>
                     {/** 카페명 클릭 시 카페 상세 화면 이동 */}
-                    <TouchableOpacity onPress={() => navigation.navigate('CafeDetailTab', { cafe : cafe }) }>
+                    <TouchableOpacity onPress={() => navigation.navigate('CafeDetailTab', { cafe : cafe, backScreen : "Home" ,Params : CustomEvent}) }>
                         <Text style={styles.cafeName}>{cafe.place_name}</Text>
                     </TouchableOpacity>
                     

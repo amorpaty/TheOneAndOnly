@@ -15,15 +15,14 @@ function MyFavoriteCafeScreen({navigation}) {
     
     // 진입 시 user정보로 찜한 카페 목록 져오기
     useEffect(() => {
-        
-        async function fetchUserFavCafeList(){
-            const userId = await AsyncStorage.getItem("userId"); 
-            const favCafeList : any[] = await getUserFavCafeList(userId);
-            setUserFavCafeList(favCafeList);
-        }
-    
         fetchUserFavCafeList();
     }, [])
+    
+    async function fetchUserFavCafeList(){
+      const userId = await AsyncStorage.getItem("userId"); 
+      const favCafeList : any[] = await getUserFavCafeList(userId);
+      setUserFavCafeList(favCafeList);
+    }
 
     //카페 찜하기 해제 핸들
     function handleFavoriteCafe(seletedCafe : Object = {}){
@@ -50,11 +49,18 @@ function MyFavoriteCafeScreen({navigation}) {
       setUserFavCafeList(favCafeList);
     }
 
+    // 상세페이지로 넘겨줄 이벤트 : cafeFavList 리셋팅
+    const CustomFavEvent = async (cafeList : []) => {
+
+        console.log("ss", cafeList)
+        await fetchUserFavCafeList();
+    }
+
     const renderCafeItem = ({ item }) => (
         <View style={styles.cafeItem}>
           <View style={styles.headerContainer}>
               <View style={{}}>
-                  <TouchableOpacity>
+                  <TouchableOpacity onPress={() => navigation.navigate('CafeDetailTab', { cafe : item, backScreen : "MyFav", Params : CustomFavEvent})}>
                     <Text style={styles.cafeName}>{item.place_name}</Text>
                   </TouchableOpacity>
               </View>
