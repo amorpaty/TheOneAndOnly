@@ -169,20 +169,20 @@ function HomeScreen({ navigation, route }) {
     }
 
     // 상세페이지로 넘겨줄 이벤트
-    const CustomEvent = (cafeList : []) => {
+    const CustomEvent = (cafeList : Object = {}) => {
 
         let poiList : [] = [];
 
         cafePoiList.forEach(s => {
             let poi = s;
-            if(s.id == cafeList[0].id){
-                poi = cafeList[0];
+            if(s.id == cafeList.id){
+                poi = cafeList;
             }
             poiList.push(poi);
         })
 
         setCafePoiList(poiList);
-        setCafeList(cafeList);
+        setCafeList([cafeList]);
     }
 
     //TODO FlatList로 변경 필요

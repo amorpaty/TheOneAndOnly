@@ -138,7 +138,7 @@ function MyScreen({navigation}) {
                     : null}
                 </View>
                 <Text style={styles.greeting}>안녕하세요 {userInfo.nickname}님 :)</Text>
-                <Text style={styles.description}>홍길동님의 활동내역을 통해 분석한 {"\n"}취향 카페 TOP 3 입니다.</Text>
+                <Text style={styles.description}>{userInfo.nickname}님의 활동내역을 통해 분석한 {"\n"}취향 카페 TOP 3 입니다.</Text>
                 <View style={styles.tagContainer}>
                     <TouchableOpacity style={styles.tagButton}>
                         <Text style={styles.tagText}># 모던한</Text>

@@ -22,13 +22,11 @@ const Tab = createMaterialTopTabNavigator();
 
 function CafeDetailTab({navigation, route}) {
 
-    const [cafeInfo, setCafeInfo] = useState([route.params.cafe]);
+    const [cafeInfo, setCafeInfo] = useState(route.params.cafe);
 
-    //*
     useFocusEffect(
         useCallback(() => {
             const onBeforeRemove = (e) => {
-
                 console.log("route.params.backScreen", route.params)
                 if(route.params.backScreen == "Home"){
                   route.params.Params(cafeInfo);
@@ -49,9 +47,9 @@ function CafeDetailTab({navigation, route}) {
       navigation.setOptions({
         title: route.params.cafe.place_name,
         headerRight : () => (
-          <View style={styles.iconContainer}>
+          <View key={1} style={styles.iconContainer}>
             <Icon name="ios-share" size={20} style={{ color: 'black', }} />
-            <Icon name={cafeInfo[0].fav === "Y" ? "favorite" : "favorite-border"} size={20} style={{ color: cafeInfo[0].fav === "Y" ? "red" : "black" }} onPress={() => handleFavoriteCafe(cafeInfo[0])} />
+            <Icon name={cafeInfo.fav === "Y" ? "favorite" : "favorite-border"} size={20} style={{ color: cafeInfo.fav === "Y" ? "red" : "black" }} onPress={() => handleFavoriteCafe(cafeInfo)} />
           </View>
         )
       });
@@ -67,7 +65,7 @@ function CafeDetailTab({navigation, route}) {
         const userId = await AsyncStorage.getItem("userId");
         const id = seletedCafe.id;
         const userFavCafe = await getUserFavCafe(userId, id);  // 비동기 데이터 조회
-        const cafe = seletedCafe;
+        const cafe = {...seletedCafe};
 
         if (userFavCafe.length > 0) {
             removeUserFavCafe(userId, id);
@@ -77,14 +75,14 @@ function CafeDetailTab({navigation, route}) {
             cafe.fav = "Y";
         }
 
-        setCafeInfo([cafe]);  
+        setCafeInfo(cafe);  
     }
 
     return (
-      <Tab.Navigator initialRouteName="CafeInfo" screenOptions={{tabBarActiveTintColor:'#57382D', tabBarLabelStyle : {fontWeight : "bold"}, tabBarShowLabel : true}}>
-        <Tab.Screen name="CafeInfo" component={CafeDetailInfoScreen} options={{title : "카페 정보"}}/>
+      <Tab.Navigator initialRouteName="CafeInfo" screenOptions={{tabBarLabelStyle : {fontWeight : "bold"}, tabBarShowLabel : true}}>
+        <Tab.Screen name="CafeInfo" component={CafeDetailInfoScreen} initialParams={{ cafeInfo: cafeInfo }} options={{title : "카페 정보"}}/>
         <Tab.Screen name="CafeKeywordAnalysis" component={CafeKeywordAnalysisScreen} options={{title : "키워드\n분석"}}/>
-        <Tab.Screen name="CafeMenu" component={CafeMenuScreen} options={{title : "메뉴"}}/>
+        <Tab.Screen name="CafeMenu" component={CafeMenuScreen} initialParams={{ cafeInfo: cafeInfo }} options={{title : "메뉴"}}/>
         <Tab.Screen name="CafeReview" component={CafeReviewScreen} options={{title : "리뷰"}}/>
         <Tab.Screen name="CafePicture" component={CafePictureScreen} options={{title : "사진"}}/>
       </Tab.Navigator>

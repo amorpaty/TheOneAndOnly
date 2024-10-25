@@ -50,9 +50,7 @@ function MyFavoriteCafeScreen({navigation}) {
     }
 
     // 상세페이지로 넘겨줄 이벤트 : cafeFavList 리셋팅
-    const CustomFavEvent = async (cafeList : []) => {
-
-        console.log("ss", cafeList)
+    const CustomFavEvent = async () => {
         await fetchUserFavCafeList();
     }
 
