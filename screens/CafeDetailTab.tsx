@@ -5,12 +5,12 @@ import CafeKeywordAnalysisScreen from "./CafeKeywordAnalysisScreen";
 import CafeMenuScreen from "./CafeMenuScreen";
 import CafePictureScreen from "./CafePirctureScreen";
 import CafeReviewScreen from "./CafeReviewScreen";
-import { Alert, BackHandler, StyleSheet, Text, View } from "react-native";
+import { StyleSheet, View } from "react-native";
 import Icon from "react-native-vector-icons/MaterialIcons";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { getUserFavCafe, removeUserFavCafe, setUserFavCafe } from "../lib/userFavCafe";
 import { CafeContext } from "../components/CafeContext";
-import { fetchUserRecentCafes, saveUserRecentCafes } from "../lib/userRecentCafes";
+import { saveUserRecentCafes } from "../lib/userRecentCafes";
 
 
 /**
@@ -53,7 +53,7 @@ function CafeDetailTab({navigation, route}) {
         // 최대 20개까지만 유지
         if (recentlyViewed.length > 20) {
           recentlyViewed.pop();
-        }       
+        }
 
         // 카페 DB 저장
         await saveUserRecentCafes(cafeViewed);

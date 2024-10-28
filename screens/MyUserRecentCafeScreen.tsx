@@ -4,13 +4,14 @@ import React, { useCallback, useState } from "react";
 import { View, Text, FlatList, StyleSheet, TouchableOpacity, ScrollView } from "react-native";
 import Icon from "react-native-vector-icons/MaterialIcons";
 import { getUserRecentCafeList } from "../lib/cafeList";
+import { removeUserFavCafe, setUserFavCafe } from "../lib/userFavCafe";
 
 /**
  * 24.10.28
  * MY 화면 -> '최근 본 카페' 화면 생성
  * @returns 
  */
-function MyUserRecentCafeScreen({navigation}) {    
+function MyUserRecentCafeScreen({navigation}) { 
     const [ userRecentCafeList, setUserRecentCafeList ] = useState([]);
 
     useFocusEffect (
@@ -36,6 +37,38 @@ function MyUserRecentCafeScreen({navigation}) {
         fetchUserRecentCafeList();
       }, [])
     );
+
+    //카페 찜하기 해제 핸들
+    function handleFavoriteCafe(seletedCafe : Object = {}){
+      updateUserFavCafe(seletedCafe);
+    }
+
+    //카페 찜 delete
+    async function updateUserFavCafe(seletedCafe : Object = {}) {
+
+      const userId = await AsyncStorage.getItem("userId");
+      const id = seletedCafe.id;
+      const cafe = {...seletedCafe};
+      const recentCafeList : any = [];
+
+      if(cafe.fav == "Y"){
+        removeUserFavCafe(userId, id);
+        cafe.fav = "N";
+      }else if(cafe.fav == "N"){
+        setUserFavCafe(userId, id);
+        cafe.fav ="Y";
+      }
+
+      userRecentCafeList.forEach(item => {
+        if(item.id == cafe.id){
+          recentCafeList.push(cafe);
+        }else{
+          recentCafeList.push(item);
+        }
+      });
+
+      setUserRecentCafeList(recentCafeList);
+    }
 
     const renderCafeItem = ({ item }) => (
         <View style={styles.cafeItem}>
