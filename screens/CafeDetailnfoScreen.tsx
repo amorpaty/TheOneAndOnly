@@ -45,8 +45,8 @@ function CafeDetailInfoScreen({route}) {
               region={{
                 latitude: Number(cafeInfo.y),
                 longitude: Number(cafeInfo.x),
-                latitudeDelta: 0.03,
-                longitudeDelta: 0.02,
+                latitudeDelta: 0.00,
+                longitudeDelta: 0.002,
               }}
             >
               <Marker

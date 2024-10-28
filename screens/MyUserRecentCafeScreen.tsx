@@ -1,55 +1,41 @@
 import AsyncStorage from "@react-native-async-storage/async-storage";
-import React, { useCallback, useEffect, useState } from "react";
-import { View, Text, FlatList, StyleSheet, TouchableOpacity, Touchable, ScrollView } from "react-native";
-import Icon from "react-native-vector-icons/MaterialIcons";
-import { getUserFavCafeList, removeUserFavCafe } from "../lib/userFavCafe";
 import { useFocusEffect } from "@react-navigation/native";
+import React, { useCallback, useState } from "react";
+import { View, Text, FlatList, StyleSheet, TouchableOpacity, ScrollView } from "react-native";
+import Icon from "react-native-vector-icons/MaterialIcons";
+import { getUserRecentCafeList } from "../lib/cafeList";
 
 /**
- * 24.10.17
- * MY 화면 -> '찜한 카페' 화면 생성
+ * 24.10.28
+ * MY 화면 -> '최근 본 카페' 화면 생성
  * @returns 
  */
-function MyFavoriteCafeScreen({navigation}) {
+function MyUserRecentCafeScreen({navigation}) {    
+    const [ userRecentCafeList, setUserRecentCafeList ] = useState([]);
 
-    const [userFavCafeList, setUserFavCafeList] = useState([]); //찜한 카페 목록 저장
-    
-    // 진입 시 user정보로 찜한 카페 목록 져오기
     useFocusEffect (
       useCallback(() => {
-        fetchUserFavCafeList();
+        // 진입 시 최근 본 카페 목록 조회
+        async function fetchUserRecentCafeList(){
+          const storageRecentCafeIdList = await AsyncStorage.getItem("RECENTLY_VIEWED_KEY");
+          const cafes = JSON.parse(storageRecentCafeIdList);
+
+          if(cafes.length > 0){
+            const cafeList : Object[] = await getUserRecentCafeList(cafes);
+
+            const cafeSorted = cafes.sort((a, b) => new Date(a.viewAt) - new Date(b.viewAt));
+            const resultCafe : [] = [];
+
+            for(const cafe of cafeSorted){
+               const pushCafe = cafeList.filter(s => s.id == cafe.id)
+               resultCafe.push(pushCafe[0]);
+            }
+            setUserRecentCafeList(resultCafe);
+          }
+        };        
+        fetchUserRecentCafeList();
       }, [])
     );
-
-    async function fetchUserFavCafeList(){
-      const userId = await AsyncStorage.getItem("userId"); 
-      const favCafeList : Object[] = await getUserFavCafeList(userId);
-      setUserFavCafeList(favCafeList);
-    }
-
-    //카페 찜하기 해제 핸들
-    function handleFavoriteCafe(seletedCafe : Object = {}){
-      updateUserFavCafe(seletedCafe);
-    }
-
-    //카페 찜 delete
-    async function updateUserFavCafe(seletedCafe : Object = {}) {
-
-      const userId = await AsyncStorage.getItem("userId");
-      const id = seletedCafe.id;
-      const cafe = {...seletedCafe};
-      const favCafeList : any = [];
-
-      removeUserFavCafe(userId, id);
-      cafe.fav = "N";
-
-      userFavCafeList.forEach(s => {
-        if(s.id != id){
-          favCafeList.push(s);
-        }
-      })
-      setUserFavCafeList(favCafeList);
-    }
 
     const renderCafeItem = ({ item }) => (
         <View style={styles.cafeItem}>
@@ -90,18 +76,13 @@ function MyFavoriteCafeScreen({navigation}) {
     
     return (
         <View style={styles.container}>
-            {/* 검색 바 */}
-            <View style={styles.userCard}>
-                {/* <Text style={styles.userDesc}>찜한 카페 목록을 확인하세요!</Text> */}
-            </View>
-
-            {/* 찜한 카페 목록 */}
+            {/* 최근 본 카페 목록 */}
             <FlatList
-                data={userFavCafeList}
+                data={userRecentCafeList}
                 renderItem={renderCafeItem}
                 keyExtractor={item => item.id.toString()}
-                ListEmptyComponent={<Text style={styles.emptyText}>찜한 카페가 없습니다.</Text>}
-                contentContainerStyle={userFavCafeList.length === 0 && styles.emptyContainer}
+                ListEmptyComponent={<Text style={styles.emptyText}>최근 본 카페가 없습니다.</Text>}
+                contentContainerStyle={userRecentCafeList.length === 0 && styles.emptyContainer}
             />
         </View>
     );
@@ -180,4 +161,4 @@ const styles = StyleSheet.create({
   });
 
 
-export default MyFavoriteCafeScreen;
+export default MyUserRecentCafeScreen;

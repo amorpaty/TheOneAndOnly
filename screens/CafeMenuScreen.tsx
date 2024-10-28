@@ -19,20 +19,26 @@ function CafeMenuScreen({navigation, route}) {
     
     //메뉴 목록 조회
     async function fetchMenuList(){
-
-      console.log("cafeInfo", cafeInfo)
       const menuList = await getMenus(cafeInfo.id);
-      console.log("menuList", menuList)
       setMenuList(menuList);
     }
 
     const renderMenuItem = ({ item }) => (
       <View style={styles.menuContainer}>
         <View style={styles.imgContainer}>
-          <Image 
-            source={item.img ? item.image : defualtCoffeeImg} 
-            style={styles.menuImage} 
-          /> 
+
+          {item.img ? 
+            <Image 
+              src={item.img ? item.img : defualtCoffeeImg} 
+              style={styles.menuImage} 
+            /> 
+            : 
+            <Image 
+              source={item.img ? item.img : defualtCoffeeImg} 
+              style={styles.menuImage} 
+            />
+          }
+          
         </View>
 
         <View style={styles.textContainer}> 

@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useRef, useState } from "react";
+import React, { useContext, useEffect, useMemo, useRef, useState } from "react";
 import { ScrollView, StyleSheet, View, Text, ActivityIndicator, TouchableOpacity } from "react-native";
 import MapView, { Marker, PROVIDER_GOOGLE } from "react-native-maps";
 import coffeeIcon from "../assets/src/image/coffeeIcon.png"
@@ -12,6 +12,8 @@ import { getSearchCafeList, getSearchKeywordCafeList } from "../lib/cafeList";
 import Icon from "react-native-vector-icons/MaterialIcons";
 import { getUserFavCafe, removeUserFavCafe, setUserFavCafe } from "../lib/userFavCafe";
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import { CafeContext } from "../components/CafeContext";
+import { fetchUserRecentCafes } from "../lib/userRecentCafes";
 
 
 /**
@@ -27,18 +29,17 @@ const defaultPosition = {
 
 function HomeScreen({ navigation, route }) {
 
+    const { cafePoiList, setCafePoiList, cafeList, setCafeList } = useContext(CafeContext);
     const [location, setLocation] = useState(defaultPosition); //지도 현재 위치 조회 컴포넌트 구현
     const [keywords, setKeywords] = useState([]); // 키워드 조회 컴포넌트 구현
-    const [cafePoiList, setCafePoiList] = useState([]); // 카페 조회 컴포넌트 구현 (키워드 별)
     const [panelContent, setPanelContent] = useState('cafeList'); // 패널의 콘텐츠 상태
-    const [cafeList, setCafeList] = useState([]); // SlidingUpPanel에 표시될 카페 리스트
-
     const cafeListPanelRef = useRef<SlidingUpPanel | null>(null);
 
     //로딩되면 키워드 목록과 현재 위치 조회
     useEffect(() => {
         fetchKeywords();
         //getCurrentPosition();
+        fetchUserRecentCafeList();
     }, []);
 
     // parameter 넘어올 시 (특정 카페 조회)
@@ -53,6 +54,12 @@ function HomeScreen({ navigation, route }) {
         cafeListPanelRef.current?.hide();
 
     }, [navigation, route])
+
+    // 사용자의 최근 본 카페 목록 조회
+    async function fetchUserRecentCafeList(){
+        const recentCafes = await fetchUserRecentCafes();
+        AsyncStorage.setItem('RECENTLY_VIEWED_KEY', JSON.stringify(recentCafes));
+    }
 
     //키워드 목록 가져오기
     async function fetchKeywords() {
@@ -75,6 +82,7 @@ function HomeScreen({ navigation, route }) {
             console.error("Failed to fetch fetchCafeList:", error); // 오류 처리
         }
     }
+
 
     //키워드 선택 시 키워드에 맞는 카페 조회
     function handleKeywordPress(keyword: Object = {}) {
@@ -168,23 +176,6 @@ function HomeScreen({ navigation, route }) {
         )
     }
 
-    // 상세페이지로 넘겨줄 이벤트
-    const CustomEvent = (cafeList : Object = {}) => {
-
-        let poiList : [] = [];
-
-        cafePoiList.forEach(s => {
-            let poi = s;
-            if(s.id == cafeList.id){
-                poi = cafeList;
-            }
-            poiList.push(poi);
-        })
-
-        setCafePoiList(poiList);
-        setCafeList([cafeList]);
-    }
-
     //TODO FlatList로 변경 필요
     //cafeList를 memoized 처리하여 불필요한 재렌더링 방지
     const memoizedCafeList = useMemo(() => {
@@ -192,7 +183,7 @@ function HomeScreen({ navigation, route }) {
             <View key={index} style={styles.cafeItem}>
                 <View style={styles.headerContainer}>
                     {/** 카페명 클릭 시 카페 상세 화면 이동 */}
-                    <TouchableOpacity onPress={() => navigation.navigate('CafeDetailTab', { cafe : cafe, backScreen : "Home" ,Params : CustomEvent}) }>
+                    <TouchableOpacity onPress={() => navigation.navigate('CafeDetailTab', { cafe : cafe }) }>
                         <Text style={styles.cafeName}>{cafe.place_name}</Text>
                     </TouchableOpacity>
                     
@@ -207,7 +198,7 @@ function HomeScreen({ navigation, route }) {
                         showsHorizontalScrollIndicator={false} // 스크롤바 숨기기 (선택 사항)
                         contentContainerStyle={styles.scrollContent} // 스크롤 내용의 스타일
                     >
-                        {keywords.map((tag) => (
+                        {cafe.keywords.map((tag) => (
                             <Text key={tag.keywordId} style={styles.tagText}> #{tag.keywordName} </Text>
                         ))}
                     </ScrollView>
