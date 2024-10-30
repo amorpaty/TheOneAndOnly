@@ -1,6 +1,7 @@
 import React, { useContext, useEffect, useMemo, useRef, useState } from "react";
 import { ScrollView, StyleSheet, View, Text, ActivityIndicator, TouchableOpacity } from "react-native";
 import MapView, { Marker, PROVIDER_GOOGLE } from "react-native-maps";
+import FastImage from 'react-native-fast-image';
 import coffeeIcon from "../assets/src/image/coffeeIcon.png"
 import Geolocation from '@react-native-community/geolocation';
 import SlidingUpPanel from 'rn-sliding-up-panel';
@@ -14,6 +15,7 @@ import { getUserFavCafe, removeUserFavCafe, setUserFavCafe } from "../lib/userFa
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { CafeContext } from "../components/CafeContext";
 import { fetchUserRecentCafes } from "../lib/userRecentCafes";
+import { Image } from "react-native";
 
 
 /**
@@ -203,15 +205,16 @@ function HomeScreen({ navigation, route }) {
                         ))}
                     </ScrollView>
                 </View>
-                <View style={styles.imageContainer}>
-                    {/* {cafe.images && cafe.images.map((image, idx) => (
-                        <FastImage
-                            key={idx}
-                            style={styles.cafeImage}
-                            source={{ uri: image }}
-                            resizeMode={FastImage.resizeMode.cover}
-                        />
-                    ))} */}
+                <View style={styles.imagesContainer}>
+                    {cafe.images.length > 0 ? (
+                        cafe.images.map((image) => (
+                        <Image 
+                            key={image.imgId}  
+                            source={{ uri: image.imgSrc }} 
+                            style={styles.image}
+                        /> 
+                        ))
+                    ) : null}
                 </View>
             </View>
         ));

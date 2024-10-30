@@ -1,6 +1,6 @@
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import React, { useCallback, useEffect, useState } from "react";
-import { View, Text, FlatList, StyleSheet, TouchableOpacity, Touchable, ScrollView } from "react-native";
+import { View, Text, FlatList, StyleSheet, TouchableOpacity, Touchable, ScrollView, Image } from "react-native";
 import Icon from "react-native-vector-icons/MaterialIcons";
 import { getUserFavCafeList, removeUserFavCafe } from "../lib/userFavCafe";
 import { useFocusEffect } from "@react-navigation/native";
@@ -51,8 +51,8 @@ function MyFavoriteCafeScreen({navigation}) {
       setUserFavCafeList(favCafeList);
     }
 
-    const renderCafeItem = ({ item }) => (
-        <View style={styles.cafeItem}>
+    const renderCafeItem = ({ item, index }) => (
+      <View style={styles.cafeItem}>
           <View style={styles.headerContainer}>
               <View style={{}}>
                   <TouchableOpacity onPress={() => navigation.navigate('CafeDetailTab', { cafe : item })}>
@@ -75,15 +75,16 @@ function MyFavoriteCafeScreen({navigation}) {
                   ))}
               </ScrollView>
           </View>
-          <View style={styles.imageContainer}>
-              {/* {cafe.images && cafe.images.map((image, idx) => (
-                  <FastImage
-                      key={idx}
-                      style={styles.cafeImage}
-                      source={{ uri: image }}
-                      resizeMode={FastImage.resizeMode.cover}
-                  />
-              ))} */}
+          <View style={styles.imagesContainer}>
+            {item.images.length > 0 ? (
+                item.images.map((image) => (
+                <Image 
+                    key={image.imgId}  
+                    source={{ uri: image.imgSrc }} 
+                    style={styles.image}
+                /> 
+                ))
+            ) : null}
           </View>
         </View>
       );
@@ -130,10 +131,15 @@ const styles = StyleSheet.create({
       flexDirection: 'row',
       justifyContent: 'space-between',
     },
-    imageContainer: {
+    imagesContainer: {
       flexDirection: 'row',
       justifyContent: 'space-between',
       marginVertical: 10,
+    },
+    image: {
+      width: 80,
+      height: 80,
+      borderRadius: 5,
     },
     tags: {
       marginTop: 10,
