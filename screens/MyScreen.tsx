@@ -108,13 +108,15 @@ function MyScreen({navigation}) {
     async function unLinkWithKakao(){
 
         const userId =  await AsyncStorage.getItem("userId");
+
+        console.log("unLinkWithKakao", userId);
         const userInfo = await getUser(userId);
 
         if(userInfo.length == 0){
             return;
         }
 
-        removeUser(userInfo[0].id);
+        removeUser(userInfo[0].userId);
         const result = await unlink(userInfo[0].email);
 
         if(result === "Successfully unlinked"){

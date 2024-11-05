@@ -6,6 +6,7 @@
  */
 
 import React, { useEffect, useState } from 'react';
+import 'react-native-url-polyfill/auto';
 import { NavigationContainer } from '@react-navigation/native'
 import RootStack from './screens/RootStack';
 import AsyncStorage from '@react-native-async-storage/async-storage';

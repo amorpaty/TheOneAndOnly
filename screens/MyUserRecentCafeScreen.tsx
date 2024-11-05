@@ -97,11 +97,11 @@ function MyUserRecentCafeScreen({navigation}) {
           <View style={styles.imagesContainer}>
             {item.images.length > 0 ? (
                 item.images.map((image) => (
-                <Image 
-                    key={image.imgId}  
-                    source={{ uri: image.imgSrc }} 
-                    style={styles.image}
-                /> 
+                  <Image 
+                      key={image.imgId}  
+                      source={{ uri: image.imgSrc }} 
+                      style={styles.image}
+                  /> 
                 ))
             ) : null}
           </View>

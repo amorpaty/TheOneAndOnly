@@ -31,14 +31,15 @@ function SignInScreen({navigation}){
             }
 
             const user = await getEmailUser(userInfo.email);
-
+            let userId : string = "" ;
             if(user.length == 0){
-              user[0] = {id : uuid.v4()};
-              setUser({id : user[0].id, email : userInfo.email, nickname : userInfo.nickname})
+              userId = await setUser({email : userInfo.email, nickname : userInfo.nickname})
             }
 
+            console.log(" user[0].userId ", user) 
+
             AsyncStorage.setItem('key', JSON.stringify(token));
-            AsyncStorage.setItem("userId", user[0].id);
+            AsyncStorage.setItem("userId", user.length == 0 ? userId.toString() : user[0].userId.toString());
             AsyncStorage.setItem('howLogin', "kakao");
             
             navigation.navigate('MainTab');
