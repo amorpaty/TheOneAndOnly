@@ -1,7 +1,6 @@
 import React, { useContext, useEffect, useMemo, useRef, useState } from "react";
 import { ScrollView, StyleSheet, View, Text, ActivityIndicator, TouchableOpacity } from "react-native";
 import MapView, { Marker, PROVIDER_GOOGLE } from "react-native-maps";
-import FastImage from 'react-native-fast-image';
 import coffeeIcon from "../assets/src/image/coffeeIcon.png"
 import Geolocation from '@react-native-community/geolocation';
 import SlidingUpPanel from 'rn-sliding-up-panel';
@@ -14,7 +13,7 @@ import Icon from "react-native-vector-icons/MaterialIcons";
 import { getUserFavCafe, removeUserFavCafe, setUserFavCafe } from "../lib/userFavCafe";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { CafeContext } from "../components/CafeContext";
-import { fetchUserRecentCafes } from "../lib/userRecentCafes";
+import { getUserRecentCafeList } from "../lib/userRecentCafes";
 import { Image } from "react-native";
 
 
@@ -40,8 +39,6 @@ function HomeScreen({ navigation, route }) {
     //로딩되면 키워드 목록과 현재 위치 조회
     useEffect(() => {
         fetchKeywords();
-        //getCurrentPosition();
-        fetchUserRecentCafeList();
     }, []);
 
     // parameter 넘어올 시 (특정 카페 조회)
@@ -57,16 +54,12 @@ function HomeScreen({ navigation, route }) {
 
     }, [navigation, route])
 
-    // 사용자의 최근 본 카페 목록 조회
-    async function fetchUserRecentCafeList(){
-        const recentCafes = await fetchUserRecentCafes();
-        AsyncStorage.setItem('RECENTLY_VIEWED_KEY', JSON.stringify(recentCafes));
-    }
-
     //키워드 목록 가져오기
     async function fetchKeywords() {
         try {
             const fetchedKeywords = await getKeywords();  // 비동기 데이터 조회
+            console.log("fetchedKeywords", fetchedKeywords)
+
             setKeywords(Object(fetchedKeywords)); // 상태에 데이터 저장
         } catch (error) {
             console.error("Failed to fetch keywords:", error); // 오류 처리
@@ -206,7 +199,7 @@ function HomeScreen({ navigation, route }) {
                     </ScrollView>
                 </View>
                 <View style={styles.imagesContainer}>
-                    {cafe.images.length > 0 ? (
+                    {cafe.images!=null && cafe.images.length > 0 ? (
                         cafe.images.map((image) => (
                         <Image 
                             key={image.imgId}  

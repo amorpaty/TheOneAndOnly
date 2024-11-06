@@ -32,14 +32,12 @@ function SignInScreen({navigation}){
 
             const user = await getEmailUser(userInfo.email);
             let userId : string = "" ;
-            if(user.length == 0){
+            if(user == undefined || user == null){
               userId = await setUser({email : userInfo.email, nickname : userInfo.nickname})
             }
 
-            console.log(" user[0].userId ", user) 
-
             AsyncStorage.setItem('key', JSON.stringify(token));
-            AsyncStorage.setItem("userId", user.length == 0 ? userId.toString() : user[0].userId.toString());
+            AsyncStorage.setItem("userId", (user == undefined || user == null) ? userId.toString() : user.userId.toString());
             AsyncStorage.setItem('howLogin', "kakao");
             
             navigation.navigate('MainTab');

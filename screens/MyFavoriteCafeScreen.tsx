@@ -22,8 +22,7 @@ function MyFavoriteCafeScreen({navigation}) {
     );
 
     async function fetchUserFavCafeList(){
-      const userId = await AsyncStorage.getItem("userId"); 
-      const favCafeList : Object[] = await getUserFavCafeList(userId);
+      const favCafeList : Object[] = await getUserFavCafeList();
       setUserFavCafeList(favCafeList);
     }
 
@@ -37,18 +36,11 @@ function MyFavoriteCafeScreen({navigation}) {
 
       const userId = await AsyncStorage.getItem("userId");
       const id = seletedCafe.id;
-      const cafe = {...seletedCafe};
-      const favCafeList : any = [];
-
+      //찜삭제
       removeUserFavCafe(userId, id);
-      cafe.fav = "N";
 
-      userFavCafeList.forEach(s => {
-        if(s.id != id){
-          favCafeList.push(s);
-        }
-      })
-      setUserFavCafeList(favCafeList);
+      //카페 찜 목록 재조회
+      fetchUserFavCafeList();
     }
 
     const renderCafeItem = ({ item, index }) => (

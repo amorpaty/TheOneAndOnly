@@ -3,8 +3,8 @@ import { useFocusEffect } from "@react-navigation/native";
 import React, { useCallback, useState } from "react";
 import { View, Text, FlatList, StyleSheet, TouchableOpacity, ScrollView, Image } from "react-native";
 import Icon from "react-native-vector-icons/MaterialIcons";
-import { getUserRecentCafeList } from "../lib/cafeList";
 import { removeUserFavCafe, setUserFavCafe } from "../lib/userFavCafe";
+import { getUserRecentCafeList } from "../lib/userRecentCafes";
 
 /**
  * 24.10.28
@@ -18,21 +18,8 @@ function MyUserRecentCafeScreen({navigation}) {
       useCallback(() => {
         // 진입 시 최근 본 카페 목록 조회
         async function fetchUserRecentCafeList(){
-          const storageRecentCafeIdList = await AsyncStorage.getItem("RECENTLY_VIEWED_KEY");
-          const cafes = JSON.parse(storageRecentCafeIdList);
-
-          if(cafes.length > 0){
-            const cafeList : Object[] = await getUserRecentCafeList(cafes);
-
-            const cafeSorted = cafes.sort((a, b) => new Date(a.viewAt) - new Date(b.viewAt));
-            const resultCafe : [] = [];
-
-            for(const cafe of cafeSorted){
-                const pushCafe = cafeList.filter(s => s.id == cafe.id)
-                resultCafe.push(pushCafe[0]);
-            }
-            setUserRecentCafeList(resultCafe);
-          }
+          const cafeList : Object[] = await getUserRecentCafeList();
+          setUserRecentCafeList(cafeList);  
         };        
         fetchUserRecentCafeList();
       }, [])
@@ -49,25 +36,16 @@ function MyUserRecentCafeScreen({navigation}) {
       const userId = await AsyncStorage.getItem("userId");
       const id = seletedCafe.id;
       const cafe = {...seletedCafe};
-      const recentCafeList : any = [];
 
       if(cafe.fav == "Y"){
         removeUserFavCafe(userId, id);
-        cafe.fav = "N";
       }else if(cafe.fav == "N"){
         setUserFavCafe(userId, id);
-        cafe.fav ="Y";
       }
-
-      userRecentCafeList.forEach(item => {
-        if(item.id == cafe.id){
-          recentCafeList.push(cafe);
-        }else{
-          recentCafeList.push(item);
-        }
-      });
-
-      setUserRecentCafeList(recentCafeList);
+      
+      const cafeList : Object[] = await getUserRecentCafeList();
+      setUserRecentCafeList(cafeList);
+      
     }
 
     const renderCafeItem = ({ item }) => (

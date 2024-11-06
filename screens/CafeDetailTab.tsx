@@ -39,25 +39,10 @@ function CafeDetailTab({navigation, route}) {
       // 최근 조회한 카페 저장
       async function saveRecentlyViewed(cafe : Object){
         const userId = await AsyncStorage.getItem("userId");
-        // 2. 로컬 저장소에 저장
-        const jsonValue = await AsyncStorage.getItem("RECENTLY_VIEWED_KEY");
-        let recentlyViewed = JSON.parse(jsonValue).length > 0 ? JSON.parse(jsonValue) : [];
-
-        // 중복된 카페 제거
-        recentlyViewed = recentlyViewed.filter((item : Object) => item.id !== cafe.id);
-
-        // 새로운 카페을 맨 앞에 추가
         let cafeViewed = {userId : userId, id : cafe.id, viewAt : getNowDate()};
-        recentlyViewed.unshift(cafeViewed);
-
-        // 최대 20개까지만 유지
-        if (recentlyViewed.length > 20) {
-          recentlyViewed.pop();
-        }
-
+        
         // 카페 DB 저장
         await saveUserRecentCafes(cafeViewed);
-        await AsyncStorage.setItem("RECENTLY_VIEWED_KEY", JSON.stringify(recentlyViewed));
       };
    
       saveRecentlyViewed(cafe);
@@ -86,7 +71,7 @@ function CafeDetailTab({navigation, route}) {
     
     const handleUpdate = () => {
       const updatedCafe = { ...cafe, fav: cafe.fav === "Y" ? "N" : "Y" };
-      let poiList : [] = [];
+      let poiList : Object[] = [];
 
       cafePoiList.forEach(s => {
           let poi = s;
