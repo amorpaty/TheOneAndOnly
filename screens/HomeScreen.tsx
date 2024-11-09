@@ -13,7 +13,6 @@ import Icon from "react-native-vector-icons/MaterialIcons";
 import { getUserFavCafe, removeUserFavCafe, setUserFavCafe } from "../lib/userFavCafe";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { CafeContext } from "../components/CafeContext";
-import { getUserRecentCafeList } from "../lib/userRecentCafes";
 import { Image } from "react-native";
 
 

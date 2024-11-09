@@ -73,14 +73,20 @@ function MyUserRecentCafeScreen({navigation}) {
               </ScrollView>
           </View>
           <View style={styles.imagesContainer}>
-            {item.images.length > 0 ? (
-                item.images.map((image) => (
-                  <Image 
-                      key={image.imgId}  
-                      source={{ uri: image.imgSrc }} 
-                      style={styles.image}
-                  /> 
-                ))
+            {item.images != null ? (
+                <ScrollView
+                    horizontal={true} // 가로 스크롤 활성화
+                    showsHorizontalScrollIndicator={false} // 스크롤바 숨기기 (선택 사항)
+                    contentContainerStyle={styles.scrollContent} // 스크롤 내용의 스타일
+                >
+                  {item.images.map((image) => (
+                    <Image 
+                        key={image.imgId}  
+                        source={{ uri: image.imgSrc }} 
+                        style={styles.image}
+                    /> 
+                  ))}
+                </ScrollView>
             ) : null}
           </View>
         </View>

@@ -1,80 +1,182 @@
 import { useFocusEffect } from "@react-navigation/native";
 import React, { useCallback, useState } from "react";
-import { Alert, Button, FlatList, Image, Modal, Platform, Pressable, StyleSheet, Text, TextInput, TouchableOpacity, View } from "react-native";
+import { Alert, FlatList, Image, Modal, Platform, Pressable, ScrollView, StyleSheet, Text, TextInput, TouchableOpacity, View } from "react-native";
 import Icon from 'react-native-vector-icons/MaterialIcons';
+import searchImage from '../assets/src/image/search.png';
+import closeBtnImage from '../assets/src/image/close_btn.png';
+import { getSearchCafeList } from "../lib/cafeList";
+import AsyncStorage from "@react-native-async-storage/async-storage";
+import { deleteUserVisitLog, getUserVisitLogList, saveUserVisitLog, updateUserVisitLog } from "../lib/userVisitLog";
+
 
 /**
  * 24.10.19 방문로그 UI 생성
  * @returns 
  */
-
-const data = [
-    {
-        date: '2023.11.11',
-        reviews: [
-        {
-            title: '카페 반하다',
-            tags: ['#원두 로스팅', '#에스프레소 바', '#엔틱한', '#노키즈존'],
-            description: '에스프레소가',
-            buttonText: '리뷰 작성',
-        },
-        {
-            title: 'LOWE',
-            tags: ['#백색 소음', '#노출 콘크리트', '#아인슈페너', '#노트북'],
-            description: '노트북 작업이 집중 잘 되는 곳.',
-            buttonText: '리뷰 보기',
-        },
-        ],
-    },
-    {
-        date: '2023.10.25',
-        reviews: [
-        {
-            title: '카페 비밀',
-            tags: ['#라떼 맛집', '#에스프레소 바', '#중후한', '#뷰 맛집'],
-            description: '산이 있는 원두에 마운틴 뷰가 멋있었다.',
-            buttonText: '리뷰 작성',
-        },
-        ],
-    },
-];
-
-const cafeList = [
-    { id: '1', name: '카페 반하다', address: '서울 송파구 방이동 49-6', imageUrl: 'image1_url' },
-    { id: '2', name: '반딧불이', address: '경기도 오산시 운암로 65', imageUrl: 'image2_url' },
-    { id: '3', name: 'Banana79', address: '서울 중랑구 양원역로 3', imageUrl: 'image3_url' },
-    { id: '4', name: '커피에 반하다', address: '서울 송파구 충민로 66', imageUrl: 'image4_url' },
-    { id: '5', name: '카페 반원', address: '서울 송파구 법원로11길 25', imageUrl: 'image5_url' },
-    { id: '6', name: '반헤이브', address: '광주 북구 운전안일길 23-6', imageUrl: 'image6_url' },
-];
-
-function VisitLogScreen({navigation}) {
-
+function VisitLogScreen(){
     const [modalVisible, setModalVisible] = useState(false); // 기존 방문로그 작성 모달
+    const [updateInsertFlag, setUpdateInsertFlag] = useState('insert'); //방문로그 목록
     const [isSearchModalVisible, setSearchModalVisible] = useState(false); // 카페 찾아보기 모달
-    const [searchText, setSearchText] = useState('');
-    const [comment, setComment] = useState('');
+    const [searchText, setSearchText] = useState(''); // 카페 찾아보기 검색어 
+    const [searchCafeList, setSearchCafeList] = useState([]); //카페 찾아보기 카페 목록
+    const [choiceCafeItem, setChoiceCafeItem] = useState(null); //카페 찾아보기에서 선택한 카페 
+    const [comment, setComment] = useState(''); //한줄평 
+    const [visitLog, setVisitLog] = useState([]); //방문로그 목록
 
 
     //해당 화면이 디바이스에서 보여질때만 실행되는 로직이 필요
     useFocusEffect(
         useCallback(() => {
            //TODO 방문로그 조회 로직 필요
-
+           fetchUserVisitLogList();
         }, [])
     );
 
+    /**
+     * 방문 로그 목록 조회
+     */
+    async function fetchUserVisitLogList (){
+       const result : Object[] = await getUserVisitLogList();
+       setVisitLog(result);
+    }
+
+    /**
+     * 방문 로그 등록 모달 오픈
+     */
+    function openModalVisible(){
+        setUpdateInsertFlag("insert");
+        setModalVisible(true);
+    }
+
+    /**
+     * 카페 찾아보기 모달 검색 조회
+     * @param searchText 
+     */
+    async function fetchCafeData(searchText : string = ""){
+        const result : Object[] = await getSearchCafeList(searchText);
+        setSearchCafeList(result);
+    };
+
+    /**
+     * 카페 찾아보기 모달 
+     * 카페 선택
+     */
+    function choiceSearchCafeItem(cafeItem : {} = {}){
+        setChoiceCafeItem(cafeItem);
+        closeSearchModal();
+    }
+
+    /**
+     * 방문로그 한줄평 등록
+     */
+    async function saveVisitLog(){
+        
+        try{
+            if(comment.trim().length == 0){
+                Alert.alert("한줄 평을 입력바랍니다.");
+                return;
+            }
+    
+            const userId = await AsyncStorage.getItem("userId");
+    
+            let params = {
+                userId : userId,
+                id : choiceCafeItem.id,
+                date : choiceCafeItem.date,
+                comment : comment
+            }        
+    
+            if(updateInsertFlag == "insert"){
+                await saveUserVisitLog(params);
+            }else if(updateInsertFlag == "update"){
+                await updateUserVisitLog(params);
+            }
+
+            const visitLog : Object [] = await getUserVisitLogList();
+            setVisitLog(visitLog);
+            closeVisitLogModal();
+        }catch(error) {
+            console.error(error);
+        }
+    }
+
+    /**
+     * 방문로그 수정
+     * @param cafe 
+     */
+    async function updateVisitLog(cafe : Object = {}){
+        setChoiceCafeItem(cafe);
+        setComment(cafe.comment);
+        setUpdateInsertFlag("update");
+        setModalVisible(true);
+    }
+
+    /**
+     * 방문로그 삭제 확인 문의 창 
+     * @param cafe 
+     */
+    async function confirmDeleteVisitLog(cafe : Object = {}){
+        Alert.alert("" ,"방문로그를 삭제 하겠습니까?", 
+            [
+                { text: "취소" },
+                { text: "확인", onPress: () => deleteVisitLog(cafe) }
+            ],
+            { cancelable: true }    // 바깥쪽을 눌렀을 때 창을 닫을 수 있는지 여부
+        )
+    }
+
+    /**
+     * 방문로그 삭제 
+     */
+    async function deleteVisitLog(cafe : Object = {}){
+        await deleteUserVisitLog(cafe);
+        fetchUserVisitLogList();
+    }
+
+    /**
+     * 방문로그 등록 모달 닫힐때 
+     * 초기화 
+     */
+    function closeVisitLogModal(){
+        setChoiceCafeItem(null);
+        setModalVisible(false);
+    }
+
+    /**
+     * 카페 찾아보기 
+     * 모달이 닫힐 때 검색한 리스트 초기화
+     */
+    function closeSearchModal(){
+        setSearchText("");
+        setSearchCafeList([]);
+        setSearchModalVisible(false)
+    }
+
     const renderReview = ({ item }) => (
         <View style={styles.reviewCard}>
-            <Text style={styles.reviewTitle}>{item.title}</Text>
-            
+            <Text style={styles.reviewTitle}>{item.place_name}</Text>
             {/* item.tags.join(' ') 부분을 <Text>로 감싸줍니다 */}
-            <Text style={styles.tags}>{item.tags.join(' ')}</Text>
-        
-            <Text style={styles.description}>{item.description}</Text>
-            <TouchableOpacity style={styles.button}>
-            <Text style={styles.buttonText}>{item.buttonText}</Text>
-            </TouchableOpacity>
+            <View style={styles.tags}>
+                <ScrollView
+                    horizontal={true} // 가로 스크롤 활성화
+                    showsHorizontalScrollIndicator={false} // 스크롤바 숨기기 (선택 사항)
+                    contentContainerStyle={styles.scrollContent} // 스크롤 내용의 스타일
+                >
+                    {item.keywords.map((tag) => (
+                        <Text key={tag.keywordId} style={styles.tagText}> #{tag.keywordName} </Text>
+                    ))}
+                </ScrollView>
+            </View>
+            <Text style={styles.description}>{item.comment}</Text>
+            <View style={{ flexDirection: 'row', alignSelf: 'flex-end'}}>
+                <TouchableOpacity style={styles.updateButton} onPress={() => updateVisitLog(item)}>
+                    <Text style={styles.buttonText}>수정</Text>
+                </TouchableOpacity>
+                <TouchableOpacity style={styles.deleteButton} onPress={() => confirmDeleteVisitLog(item)}>
+                    <Text style={styles.buttonText}>삭제</Text>
+                </TouchableOpacity>
+            </View>
+            
         </View>
     );
 
@@ -82,10 +184,10 @@ function VisitLogScreen({navigation}) {
         <View style={styles.timelineItem}>
             {/* 타임라인의 빨간 선 및 점 */}
             <View style={styles.timelineLineContainer}>
-            <View style={styles.timelineDot} />
-            
-            {/* 마지막 항목엔 선을 그리지 않음 */}
-            {index !== data.length - 1 && <View style={styles.timelineLine} />}
+                <View style={styles.timelineDot} />
+                
+                {/* 마지막 항목엔 선을 그리지 않음 */}
+                {index !== visitLog.length - 1 && <View style={styles.timelineLine} />}
             </View>
         
             <View style={styles.content}>
@@ -104,9 +206,11 @@ function VisitLogScreen({navigation}) {
     return (
         <View style={styles.container}>
             <FlatList
-                data={data}
+                data={visitLog}
                 renderItem={renderItem}
                 keyExtractor={(item, index) => index.toString()}
+                ListEmptyComponent={<Text style={styles.emptyText}>등록된 방문로그가 없습니다.</Text>}
+                contentContainerStyle={visitLog.length === 0 && styles.emptyContainer}
             />
             <View style={styles.wrapper}>
                 {/* 하단에 동그란 추가 버튼 */}
@@ -117,7 +221,7 @@ function VisitLogScreen({navigation}) {
                         }
                     ]}
                     android_ripple={{color :  '#57382D'}}
-                    onPress={() => setModalVisible(true)}
+                    onPress={() => openModalVisible()}
                 >
                     <Icon name="add" size={24} style={styles.icon} />
                 </Pressable>
@@ -132,51 +236,78 @@ function VisitLogScreen({navigation}) {
             >
                 <View style={styles.modalOverlay}>
                     <View style={styles.modalContainer}>
+                    <ScrollView
+                        style={styles.scrollView}
+                        contentContainerStyle={styles.scrollContentContainer}
+                    >
                         <View style={styles.modalContent}>
-                            <TouchableOpacity style={styles.searchButton} onPress={() => setSearchModalVisible(true)}>
+                            <TouchableOpacity disabled={updateInsertFlag == 'update' ? true : false}   style={styles.searchButton} onPress={() => setSearchModalVisible(true)}>
                                 <Text style={styles.searchButtonText}>카페 찾아보기</Text>
                             </TouchableOpacity>
 
                             {/* 카페 정보 */}
-                            <Text style={styles.cafeTitle}>카페 반하다</Text>
-                            <Text style={styles.tags}>#원두 로스팅 #에스프레소 바 #엔틱한 #노키즈존</Text>
+                            {choiceCafeItem != null && choiceCafeItem != undefined ? 
+                                <View style={styles.choiceCafeItemContainer}>
+                                    <Text style={styles.cafeTitle}>{choiceCafeItem.place_name}</Text>
+                                    <View style={styles.tags}>
+                                        <ScrollView
+                                            horizontal={true} // 가로 스크롤 활성화
+                                            showsHorizontalScrollIndicator={false} // 스크롤바 숨기기 (선택 사항)
+                                            contentContainerStyle={styles.scrollContent} // 스크롤 내용의 스타일
+                                        >
+                                            {choiceCafeItem.keywords.map((tag) => (
+                                                <Text key={tag.keywordId} style={styles.tagText}> #{tag.keywordName} </Text>
+                                            ))}
+                                        </ScrollView>
+                                    </View>
 
-                            {/* 이미지 섹션 */}
-                            <View style={styles.imageContainer}>
-                                <Image
-                                    source={{ uri: 'https://example.com/cafe1.jpg' }}
-                                    style={styles.cafeImage}
-                                />
-                                <Image
-                                    source={{ uri: 'https://example.com/cafe2.jpg' }}
-                                    style={styles.cafeImage}
-                                />
-                                <Image
-                                    source={{ uri: 'https://example.com/cafe3.jpg' }}
-                                    style={styles.cafeImage}
-                                />
-                            </View>
+                                    {/* 이미지 섹션 */}
+                                    <View style={styles.imageContainer}>
+                                        {choiceCafeItem.images!=null && choiceCafeItem.images.length > 0 ? (
+                                            <ScrollView
+                                                horizontal={true} // 가로 스크롤 활성화
+                                                showsHorizontalScrollIndicator={false} // 스크롤바 숨기기 (선택 사항)
+                                                contentContainerStyle={styles.scrollContent} // 스크롤 내용의 스타일
+                                            >
+                                                {choiceCafeItem.images.map((image) => (
+                                                    <Image 
+                                                        key={image.imgId}  
+                                                        source={{ uri: image.imgSrc }} 
+                                                        style={styles.image}
+                                                    /> 
+                                                ))}
+                                            </ScrollView>
+                                        ) : null}
+                                    </View>
 
-                            {/* 한줄평 입력 */}
-                            <TextInput
-                                style={styles.input}
-                                placeholder="한줄평"
-                                value={comment}
-                                onChangeText={setComment}
-                            />
-
+                                    {/* 한줄평 입력 */}
+                                    <TextInput
+                                        style={styles.input}
+                                        placeholder="한줄평"
+                                        value={comment}
+                                        onChangeText={setComment}
+                                    />
+                                </View>
+                                : 
+                                (
+                                    <View style={styles.choiceNoCafeItemContainer}>
+                                        <Text style={styles.emptyText}>카페를 선택바랍니다.</Text>
+                                    </View>
+                                )
+                            }
                             {/* 버튼 섹션 */}
                             <View style={styles.buttonContainer}>
-                                <TouchableOpacity style={styles.cancelButton} onPress={() => setModalVisible(false)}>
+                                <TouchableOpacity style={styles.cancelButton} onPress={() => closeVisitLogModal()}>
                                     <Text style={styles.buttonText}>취소하기</Text>
                                 </TouchableOpacity>
 
-                                <TouchableOpacity style={styles.submitButton}>
-                                    <Text style={styles.buttonText}>등록하기</Text>
+                                <TouchableOpacity style={styles.submitButton} onPress={() => saveVisitLog()}>
+                                    <Text style={styles.buttonText}>{updateInsertFlag == "update" ? '수정하기' : '등록하기'}</Text>
                                 </TouchableOpacity>
                             </View>
                         </View>    
-                    </View>
+                    </ScrollView>    
+                    </View>    
                 </View>
             </Modal>
 
@@ -185,38 +316,53 @@ function VisitLogScreen({navigation}) {
                 visible={isSearchModalVisible}
                 animationType="slide"
                 transparent={true}
-                onRequestClose={() => setSearchModalVisible(false)}
+                onRequestClose={() => closeSearchModal()}
             >
                 <View style={styles.searchModalContainer}>
                     <View style={styles.searchModalContent}>
                         <View style={styles.searchHeader}>
                             <Text style={styles.title}>카페 찾아보기</Text>
-                            <TouchableOpacity onPress={() => setSearchModalVisible(false)}>
+                            <TouchableOpacity onPress={() => closeSearchModal()}>
                                 <Text style={styles.closeButton}>✕</Text>
                             </TouchableOpacity>
                         </View>
                         
                         <View style={styles.searchBar}>
+                            <Image source={searchImage} style={styles.searchImage}/>
                             <TextInput
                             style={styles.searchInput}
                             placeholder="카페명 입력"
                             value={searchText}
                             onChangeText={setSearchText}
+                            onSubmitEditing={() => {
+                                // 검색어를 기반으로 데이터를 조회하는 함수 호출
+                                fetchCafeData(searchText);
+                            }}
                             />
+                            <TouchableOpacity onPress={() => setSearchText("")}>
+                                <Image source={closeBtnImage} style={styles.searchImage} />
+                            </TouchableOpacity>
                         </View>
 
                         <FlatList
-                            data={cafeList}
+                            data={searchCafeList}
                             keyExtractor={(item) => item.id}
                             renderItem={({ item }) => (
-                                <View style={styles.cafeItem}>
-                                    {/* <Image source={{ uri: item.imageUrl }} style={styles.cafeImage} /> */}
-                                    <View style={styles.cafeTextContainer}>
-                                    <Text style={styles.cafeName}>{item.name}</Text>
-                                    <Text style={styles.cafeAddress}>{item.address}</Text>
+                                <TouchableOpacity onPress={() => choiceSearchCafeItem(item)}>
+                                    <View style={styles.cafeItem}>
+                                        {   item.images != null ? 
+                                            <Image source={{ uri: item.images[0].imgSrc }} style={styles.oneCafeImage} />
+                                            : null
+                                        }
+                                        <View style={styles.cafeTextContainer}>
+                                            <Text style={styles.cafeName}>{item.place_name}</Text>
+                                            <Text style={styles.cafeAddress}>{item.road_address_name}</Text>
+                                        </View>
                                     </View>
-                            </View>
+                                </TouchableOpacity>
                             )}
+                            ListEmptyComponent={<Text style={styles.emptyText}>검색어를 입력바랍니다.</Text>}
+                            contentContainerStyle={searchCafeList.length === 0 && styles.emptyContainer}
                         />
                     </View>                    
                 </View>
@@ -287,9 +433,16 @@ const styles = StyleSheet.create({
         fontSize: 14,
         color: '#333',
     },
-    button: {
+    updateButton: {
         alignSelf: 'flex-end',
         backgroundColor: '#e74c3c',
+        paddingVertical: 5,
+        paddingHorizontal: 15,
+        borderRadius: 5,
+    },
+    deleteButton : {
+        alignSelf: 'flex-end',
+        backgroundColor: '#8b4513',
         paddingVertical: 5,
         paddingHorizontal: 15,
         borderRadius: 5,
@@ -347,16 +500,20 @@ const styles = StyleSheet.create({
     },
     modalOverlay: {
         flex: 1,
-        justifyContent: 'center',
+        height : '42%',
+        justifyContent: 'center', // 모달을 아래쪽에 위치
         alignItems: 'center',
         backgroundColor: 'rgba(0, 0, 0, 0.5)', // 반투명 배경
     },
     modalContainer: {
         width: '90%', // 화면 너비의 90%를 차지하도록 설정
+        height : '42%',
+        maxHeight : '42%',
         backgroundColor: '#fff',
         borderRadius: 10,
         padding: 20,
         elevation: 10, // 그림자 효과 추가
+        overflow: "scroll"
     },
     searchButton: {
         width: '100%',
@@ -371,6 +528,10 @@ const styles = StyleSheet.create({
         fontSize: 16,
     },
     modalContent: {
+        flex : 1,
+        height : '100%',
+        maxHeight : '100%',
+        overflow: "scroll",
         justifyContent: 'center',
     },
     cafeTitle: {
@@ -382,6 +543,10 @@ const styles = StyleSheet.create({
         flexDirection: 'row',
         justifyContent: 'space-between',
         marginBottom: 15,
+    },
+    choiceImageContainer : {
+        flexDirection: 'row',
+        marginTop: 10,
     },
     cafeImage: {
         width: 90,
@@ -421,7 +586,6 @@ const styles = StyleSheet.create({
     },
     headerContainer : {
         flexDirection: 'row',
-        justifyContent: 'space-between',
         marginTop : 10,
     },
     iconContainer:{
@@ -433,6 +597,7 @@ const styles = StyleSheet.create({
         padding: 15,
         borderRadius: 10,
         marginBottom: 10,
+        flexDirection: 'row',
         shadowColor: '#000',
         shadowOffset: { width: 0, height: 2 },
         shadowOpacity: 0.1,
@@ -446,6 +611,12 @@ const styles = StyleSheet.create({
         fontSize: 14,
         color: '#888',
         marginTop: 5,
+    },
+    oneCafeImage : {
+        width: 55,
+        height: 55,
+        borderRadius: 10,
+        marginRight : 5,
     },
     scrollContent: {
         flexDirection: 'row',
@@ -487,6 +658,7 @@ const styles = StyleSheet.create({
     },
     searchModalContent: {
         width: '90%',
+        height : '80%',
         backgroundColor: 'white',
         borderRadius: 10,
         padding: 20,
@@ -514,6 +686,43 @@ const styles = StyleSheet.create({
     },
     cafeAddress: {
         color: '#555',
+    },
+    searchImage : {
+        marginLeft : 10,
+        marginRight : 5,
+    },
+    choiceCafeItemContainer : {
+        width : '100%',
+        height: '70%',
+        maxHeight : '70%',
+    },
+    choiceNoCafeItemContainer : {
+        width : '100%',
+        height: '70%',
+        maxHeight : '70%',
+        justifyContent: 'center',
+        alignItems: 'center'
+    },
+    tagText: {
+        fontSize: 14,
+        fontWeight: '500',
+        color: '#3a3b3a',
+    },
+    image: {
+        width: 80,
+        height: 80,
+        borderRadius: 5,
+    },
+    // ScrollView의 스타일
+    scrollView: {
+        flex: 1, // ScrollView가 전체 공간을 차지하도록 설정
+        width: '100%', // 화면 너비에 맞추기
+    },
+
+    // ScrollView의 contentContainer 스타일
+    scrollContentContainer: {
+        flexGrow: 1, // 스크롤 뷰 내용물이 적더라도 화면을 채우도록 설정
+        justifyContent: 'center', // 내용을 가운데 정렬
     },
 });
 

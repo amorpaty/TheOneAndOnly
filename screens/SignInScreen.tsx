@@ -5,8 +5,7 @@ import logo from "../assets/src/image/logo.png";
 import kakaoLoginButtonImg from "../assets/src/image/kakaoLoginButton.png";
 import googleLoginButtonImg from "../assets/src/image/googleLoginButton.png";
 import AsyncStorage from "@react-native-async-storage/async-storage"
-import { getEmailUser, getUser, setUser } from "../lib/user";
-import uuid from 'react-native-uuid';
+import { getEmailUser, setUser } from "../lib/user";
 
 /**
  * 24.10.07 

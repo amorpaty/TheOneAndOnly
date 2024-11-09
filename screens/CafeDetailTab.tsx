@@ -29,7 +29,7 @@ function CafeDetailTab({navigation, route}) {
       navigation.setOptions({
         title: route.params.cafe.place_name,
         headerRight : () => (
-          <View key={1} style={styles.iconContainer}>
+          <View style={styles.iconContainer}>
             <Icon name="ios-share" size={20} style={{ color: 'black', }} />
             <Icon name={cafe.fav === "Y" ? "favorite" : "favorite-border"} size={20} style={{ color: cafe.fav === "Y" ? "red" : "black" }} onPress={() => handleFavoriteCafe(cafe)} />
           </View>
